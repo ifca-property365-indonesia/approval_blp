@@ -130,3 +130,4 @@ Route::GET('/landsubmission/{status}/{encrypt}', [LandSubmission::class, 'proces
 
 use App\Http\Controllers\ConnectController as Connect;
 Route::GET('/connect', [Connect::class, 'index']);
+Route::GET('/info', [Connect::class, 'info']);

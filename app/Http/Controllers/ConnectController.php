@@ -21,4 +21,9 @@ class ConnectController extends Controller
             return "❌ Gagal konek ke database. Error: " . $e->getMessage();
         }
     }
+
+    public function info()
+    {
+        phpinfo();
+    }
 }
