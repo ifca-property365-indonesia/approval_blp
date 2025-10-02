@@ -17,6 +17,7 @@ use App\Mail\StaffActionMail;
 use App\Mail\StaffActionPoRMail;
 use App\Mail\StaffActionPoSMail;
 use Carbon\Carbon;
+use Exception;
 
 class StaffActionController extends Controller
 {
@@ -402,11 +403,11 @@ class StaffActionController extends Controller
         $folder_name = $request->folder_name;
 
         // Connect to FTP server
-        $ftp_server = "uat.ifca.co.id";
-        $ftp_conn = ftp_connect($ftp_server, 2111) or die("Could not connect to $ftp_server");
+        $ftp_server = "120.89.94.34";
+        $ftp_conn = ftp_connect($ftp_server, 2121) or die("Could not connect to $ftp_server");
 
         // Log in to FTP server
-        $ftp_user_name = "blp";
+        $ftp_user_name = "ifca-att-train";
         $ftp_user_pass = "1fc41fc4";
         $login = ftp_login($ftp_conn, $ftp_user_name, $ftp_user_pass);
 

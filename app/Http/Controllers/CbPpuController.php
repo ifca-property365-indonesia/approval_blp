@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Mail\SendCbPpuMail;
 use PDO;
 use DateTime;
+use Exception;
 
 class CbPPuController extends Controller
 {

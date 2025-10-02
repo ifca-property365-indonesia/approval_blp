@@ -18,6 +18,7 @@ use App\Mail\StaffActionPoOrderMail;
 use App\Mail\StaffActionCbMail;
 use App\Mail\StaffActionCbFupdMail;
 use Carbon\Carbon;
+use Exception;
 
 class StaffFeedbackController extends Controller
 {
@@ -97,6 +98,7 @@ class StaffFeedbackController extends Controller
             $approve_seq = $request->approve_seq;
             if (!empty($emailAddresses)) {
                 $emails = $emailAddresses;
+                $sentTo = $emailAddresses;
 
                 $emailSent = false;
                 // Check if the email has been sent before for this document
@@ -127,7 +129,6 @@ class StaffFeedbackController extends Controller
                     $sentTo = $emailAddresses;
                     Log::channel('sendmailfeedback')->info('Email Feedback doc_no '.$doc_no.' Entity ' . $entity_cd.' berhasil dikirim ke: ' . $sentTo);
                     return 'Email berhasil dikirim ke: ' . $sentTo;
-                    $emailSent = true;
                 } else {
                     Log::channel('sendmailfeedback')->info('Email Feedback doc_no ' . $doc_no . ' Entity ' . $entity_cd . ' sudah dikirim ke: ' . $sentTo);
                     return 'Email Sudah dikirim ke: ' . $sentTo;
@@ -213,7 +214,7 @@ class StaffFeedbackController extends Controller
             $approve_seq = $request->approve_seq;
             if (!empty($emailAddresses)) {
                 $emails = $emailAddresses;
-
+                $sentTo = $emailAddresses;
                 $emailSent = false;
                 
                 // Check if the email has been sent before for this document
@@ -331,6 +332,7 @@ class StaffFeedbackController extends Controller
             $dateTime_app = Carbon::createFromFormat('M  j Y h:iA', $request->approved_date)->format('Ymd');
             if (!empty($emailAddresses)) {
                 $emails = $emailAddresses;
+                $sentTo = $emailAddresses;
 
                 $emailSent = false;
                 

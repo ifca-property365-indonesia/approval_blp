@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Mail\SendCbPpuVvipMail;
 use PDO;
 use DateTime;
+use Exception;
 
 class CbPPuVvipController extends Controller
 {
