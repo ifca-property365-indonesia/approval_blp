@@ -129,4 +129,4 @@ Route::POST('/landsubmission/update', [LandSubmission::class, 'update']);
 Route::GET('/landsubmission/{status}/{encrypt}', [LandSubmission::class, 'processData']);
 
 use App\Http\Controllers\ConnectController as Connect;
-Route::POST('/connect', [Connect::class, 'index']);
+Route::GET('/connect', [Connect::class, 'index']);
