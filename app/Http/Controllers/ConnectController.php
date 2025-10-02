@@ -11,16 +11,16 @@ class ConnectController extends Controller
     public function index(Request $request)
     {
         try {
-            // Coba koneksi pakai default connection di config/database.php (ambil dari .env)
-            DB::connection()->getPdo();
+            // Koneksi pakai koneksi 'BLP'
+            DB::connection('BLP')->getPdo();
 
-            // Jika sukses
-            $dbName = DB::connection()->getDatabaseName();
+            $dbName = DB::connection('BLP')->getDatabaseName();
             return "✅ Berhasil konek ke database: " . $dbName;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "❌ Gagal konek ke database. Error: " . $e->getMessage();
         }
     }
+
 
     public function info()
     {

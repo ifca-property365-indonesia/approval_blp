@@ -65,7 +65,6 @@ return [
 
         'BLP' => [
             'driver' => 'sqlsrv',
-            'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST2', '127.0.0.1'),
             'port' => env('DB_PORT2', '1433'),
             'database' => env('DB_DATABASE2', 'forge'),
@@ -73,12 +72,9 @@ return [
             'password' => env('DB_PASSWORD2', ''),
             'charset' => 'utf8',
             'prefix' => '',
-            'encrypt' => 'yes',
+            'encrypt' => 'no',   // coba matikan dulu TLS
             'trust_server_certificate' => true,
-            // 'options'   => [
-            //     PDO::ATTR_TIMEOUT   => 2400
-            // ],
-            'prefix_indexes' => true, // Corrected line
+            'prefix_indexes' => true,
         ],
 
         'pgsql' => [
