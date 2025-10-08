@@ -25,7 +25,7 @@
                         <tbody>
                             <tr>
                                 <td style="text-align: center; padding-bottom:25px">
-                                    <img src="{{ url('public/images/email_header.png') }}" alt="logo" style="height:55px; width:auto;">
+                                    <img src="{{ url('public/images/email_header.png') }}" alt="logo" style="height:56px; width:auto;">
                                         <p style="font-size: 16px; color: #026735; padding-top: 0px;">{{ $dataArray['entity_name'] }}</p>
                                 </td>
                             </tr>
