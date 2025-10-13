@@ -28,10 +28,18 @@
                     <table style="width:100%;max-width:620px;margin:0 auto;">
                         <tbody>
                             <tr>
-                                <td style="text-align: center; padding-bottom:25px">
-                                    <img src="{{ url('public/images/email_header.png') }}" alt="logo" height="56px" style="display:block; border:0; outline:none; text-decoration:none;">
-                                    <p style="font-size: 16px; color: #026735; padding-top: 0px;">PT BANGUN LAKSANA PERSADA</p>
+                                <td style="text-align: center; padding-bottom:25px;">
+                                    <div style="display: inline-block; vertical-align: middle;">
+                                        <img src="{{ url('public/images/email_header.png') }}" 
+                                            alt="logo" 
+                                            height="56" 
+                                            style="display:inline-block; vertical-align:middle; border:0; outline:none; text-decoration:none;">
+                                    </div>
+                                    <div style="display: inline-block; vertical-align: middle; padding-left: 10px;">
+                                        <p style="font-size: 16px; color: #026735; margin: 0;">PT BANGUN LAKSANA PERSADA</p>
+                                    </div>
                                 </td>
+
                             </tr>
                         </tbody>
                     </table>
