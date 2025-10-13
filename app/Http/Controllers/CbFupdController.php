@@ -51,6 +51,8 @@ class CbFupdController extends Controller
             'entity_name'   => $data["entity_name"],
             'band_hd_descs' => $band_hd_descs,
             'band_hd_no'    => $data["band_hd_no"],
+            'bank_from'     => $data["bank_from"],
+            'bank_to'       => $data["bank_to"],
             'dt_amount'     => $dt_amount,
             'url_file'      => $url_data,
             'file_name'     => $file_data,

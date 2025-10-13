@@ -41,8 +41,10 @@
                                     <p style="text-align:left;margin-bottom: 15px; color: #000000; font-size: 16px;">Below is a propose to transfer that requires your approval :</p>
                                     <p style="text-align:left; margin-bottom: 15px; margin-top: 0; color: #000000; font-size: 16px; list-style-type: circle;">
                                         <b>{{ $dataArray['band_hd_descs'] }}</b><br>
+                                        From Bank : {{ $dataArray['bank_from'] }}<br>
+                                        To Bank : {{ $dataArray['bank_to'] }}<br>
                                         With a total amount of IDR {{ $dataArray['dt_amount'] }}<br>
-                                        Doc No.: {{ $dataArray['band_hd_no'] }}<br>
+                                        FUPB No.: {{ $dataArray['band_hd_no'] }}<br>
                                     </p>
 
                                     @php
@@ -56,7 +58,7 @@
                                                     $hasAttachment = true;
                                                 @endphp
                                                 <p style="text-align:left; margin-bottom: 15px; color: #000000; font-size: 16px;">
-                                                    <span>To view a detailed product list, description, and estimate price per item, please click on the link below :</span><br>
+                                                    <span>To View a detailed Propose Transfer Bank To Bank, please click on the link below :</span><br>
                                             @endif
                                             <a href="{{ $url_file }}" target="_blank">{{ $dataArray['file_name'][$key] }}</a><br>
                                         @endif
