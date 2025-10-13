@@ -57,7 +57,7 @@
           <!-- Header -->
           <tr>
             <td align="center" style="padding-bottom:25px;">
-              <img src="{{ url('public/images/email_header.png') }}" alt="logo" width="130" style="display:block;">
+              <img src="{{ url('public/images/email_header.png') }}" alt="logo" width="130" height="65px" style="display:block;">
               <p style="font-size:16px; color:#026735; margin:10px 0 0;">{{ $dataArray['entity_name'] }}</p>
             </td>
           </tr>
