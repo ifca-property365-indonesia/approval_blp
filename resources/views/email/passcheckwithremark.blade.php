@@ -34,7 +34,7 @@
                                         height="56" 
                                         style="display:inline-block; border:0; outline:none; text-decoration:none;">
                                     <p style="font-size:16px; color:#026735; margin:10px 0 0; text-align:center;">
-                                    {{ $dataArray['entity_name'] }}
+                                        PT BANGUN LAKSANA PERSADA
                                     </p>
                                 </td>
                             </tr>
