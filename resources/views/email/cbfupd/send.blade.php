@@ -64,7 +64,7 @@
 
           <!-- Content -->
           <tr>
-            <td class="content" style="background-color:#e0e0e0; padding:30px; color:#000000; font-size:14px; line-height:22px;">
+            <td class="content" style="background-color:#e0e0e0; padding: 30px 30px; color:#000000; font-size:14px; line-height:22px;">
               <h5 style="font-size:20px; font-weight:400; margin:0 0 15px;">Dear {{ $dataArray['user_name'] }}, </h5>
               <p style="margin:0 0 15px;">Below is a propose to transfer that requires your approval :</p>
 
