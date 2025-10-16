@@ -136,3 +136,9 @@ use App\Http\Controllers\LandfphController as Landfph;
 Route::POST('/fph', [Landfph::class, 'index']);
 Route::GET('/fph/{status}/{encrypt}', [Landfph::class, 'processData']);
 Route::POST('/fph/getaccess', [Landfph::class, 'getaccess']);
+
+use App\Http\Controllers\LandVerificationController as LandVerification;
+Route::POST('/landverification', [LandVerification::class, 'index']);
+Route::GET('/landverification/{status}/{encrypt}', [LandVerification::class, 'processData']);
+Route::POST('/landverification/getaccess', [LandVerification::class, 'getaccess']);
+Route::POST('/landverification/feedback', [LandVerification::class, 'feedback_verification']);
