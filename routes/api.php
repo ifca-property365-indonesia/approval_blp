@@ -131,3 +131,8 @@ Route::GET('/landsubmission/{status}/{encrypt}', [LandSubmission::class, 'proces
 use App\Http\Controllers\ConnectController as Connect;
 Route::GET('/connect', [Connect::class, 'index']);
 Route::GET('/info', [Connect::class, 'info']);
+
+use App\Http\Controllers\LandfphController as Landfph;
+Route::POST('/fph', [Landfph::class, 'index']);
+Route::GET('/fph/{status}/{encrypt}', [Landfph::class, 'processData']);
+Route::POST('/fph/getaccess', [Landfph::class, 'getaccess']);
