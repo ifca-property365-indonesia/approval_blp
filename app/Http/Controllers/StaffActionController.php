@@ -413,7 +413,6 @@ class StaffActionController extends Controller
 
         $file = "ifca-att/".$folder_name."/".$file_name;
 
-
         if (ftp_size($ftp_conn, $file) > 0) {
             echo "Ada File";
         } else {
