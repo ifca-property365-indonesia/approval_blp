@@ -24,9 +24,14 @@
                     <table style="width:100%;max-width:620px;margin:0 auto;">
                         <tbody>
                             <tr>
-                                <td style="text-align: center; padding-bottom:25px">
-                                    <img src="{{ url('public/images/email_header.png') }}" alt="logo" height="56px" style="display:block; border:0; outline:none; text-decoration:none;">
-                                        <p style="font-size: 16px; color: #026735; padding-top: 0px;">{{ $dataArray['entity_name'] }}</p>
+                                <td align="center" style="padding-bottom:25px; text-align:center;">
+                                    <img src="{{ url('public/images/email_header.png') }}" 
+                                        alt="logo" 
+                                        height="56" 
+                                        style="display:inline-block; border:0; outline:none; text-decoration:none;">
+                                    <p style="font-size:16px; color:#026735; margin:10px 0 0; text-align:center;">
+                                        {{ $dataArray['entity_name'] }}
+                                    </p>
                                 </td>
                             </tr>
                         </tbody>
