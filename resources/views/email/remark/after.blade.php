@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="x-apple-disable-message-reformatting">
     <title>IFCA - Bangun Laksana Persada</title>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url('public/images/KuraKuraBali-iconew.ico') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url('public/images/pakuwon_icon.ico') }}">
     
     <style>
         body {
@@ -26,8 +26,11 @@
                         <tbody>
                             <tr>
                                 <td style="text-align: center; padding-bottom:25px">
-                                    <img src="{{ url('public/images/email_header.png') }}" alt="logo" height="56px" style="display:block; border:0; outline:none; text-decoration:none;">
-                                        <p style="font-size: 16px; color: #026735; padding-top: 0px;">PT BANGUN LAKSANA PERSADA</p>
+                                    <img src="{{ url('public/images/email_header.png') }}" 
+                                        alt="logo" 
+                                        height="56" 
+                                        style="display:inline-block; border:0; outline:none; text-decoration:none;">
+                                    <p style="font-size: 16px; color: #026735; padding-top: 0px;">{{ $entity_name }}</p>
                                 </td>
                             </tr>
                         </tbody>

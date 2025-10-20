@@ -126,6 +126,27 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'sendmail' => [
+            'driver' => 'daily', // You can choose the appropriate log driver (single, daily, syslog, etc.)
+            'path' => storage_path('logs/sendmail.log'),
+            'ignore_exceptions' => false,
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
+        'sendmailfeedback' => [
+            'driver' => 'daily', // You can choose the appropriate log driver (single, daily, syslog, etc.)
+            'path' => storage_path('logs/sendmail/' . date('Ymd') . '/sendmailfeedback.log'),
+            'ignore_exceptions' => false,
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
+        'sendmailapproval' => [
+            'driver' => 'daily', // You can choose the appropriate log driver (single, daily, syslog, etc.)
+            'path' => storage_path('logs/sendmail/' . date('Ymd') . '/sendmailapproval.log'),
+            'ignore_exceptions' => false,
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
     ],
 
 ];

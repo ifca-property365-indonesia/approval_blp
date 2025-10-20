@@ -403,7 +403,7 @@ class StaffActionController extends Controller
         $folder_name = $request->folder_name;
 
         // Connect to FTP server
-        $ftp_server = "120.89.94.34";
+        $ftp_server = "10.41.41.112";
         $ftp_conn = ftp_connect($ftp_server, 2121) or die("Could not connect to $ftp_server");
 
         // Log in to FTP server

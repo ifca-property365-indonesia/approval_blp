@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Mail\SendLandFphMail;
+use App\Mail\FeedbackMail;
 use Exception;
 use Carbon\Carbon;
 
@@ -26,16 +27,25 @@ class LandfphController extends Controller
 
         try {
             // ====== Persiapan data ======
-            $newurl2 = explode(";", trim(str_replace(' ','%20',$request->url_link)));
-            $link = [];
-            foreach ($newurl2 as $show) {
-                $link[] = $show;
-            }
+            // Ambil dan bersihkan URL
+            $urlArray = array_filter(array_map('trim', explode(';', $request->url_link)), function($item) {
+                return strtoupper($item) !== 'EMPTY' && $item !== '';
+            });
 
-            $file_name_data = explode(";", trim($request->file_name));
-            $link_file_name = [];
-            foreach ($file_name_data as $show_file_name) {
-                $link_file_name[] = $show_file_name;
+            // Ambil file name yang sesuai dengan URL
+            $fileArray = array_filter(array_map('trim', explode(';', $request->file_name)), function($item) {
+                return strtoupper($item) !== 'EMPTY' && $item !== '';
+            });
+
+            // Jika jumlah URL dan file_name tidak sama, pastikan pasangannya sama
+            $attachments = [];
+            foreach ($urlArray as $key => $url) {
+                if (isset($fileArray[$key])) {
+                    $attachments[] = [
+                        'url' => $url,
+                        'file_name' => $fileArray[$key]
+                    ];
+                }
             }
 
             // dd($request->transaction_date);
@@ -61,8 +71,7 @@ class LandfphController extends Controller
                 'luas_alas_hak'       => $request->luas_alas_hak,
                 'entity_name'       => $request->entity_name,
                 'name_owner'        => $request->name_owner,
-                'url_link'          => $link,
-                'file_name'          => $link_file_name,
+                'attachments'       => $attachments,
                 'total_amt'         => $total_amt,
                 'book_amt'          => $book_amt,
                 'email_addr'        => $request->email_addr,
@@ -74,7 +83,7 @@ class LandfphController extends Controller
                 "clarify_user"		=> $request->clarify_user,
                 "clarify_email"		=> $request->clarify_email,
                 'approve_list'      => $approve_data,
-                'subject'           => "Need Approval for Land FPH No.  ".$request->doc_no,
+                'subject'           => "Need Approval for ".$request->doc_no,
                 'link'              => 'LandFph',
             ];
 
@@ -90,6 +99,7 @@ class LandfphController extends Controller
                 'usergroup'     => $request->usergroup,
                 'user_id'       => $request->user_id,
                 'supervisor'    => $request->supervisor,
+                'entity_name'   => $request->entity_name,
                 'type'          => 'F',
                 'type_module'   => 'LM',
                 'text'          => 'Land FPH',
@@ -104,15 +114,15 @@ class LandfphController extends Controller
             ];
 
             // ====== Proses kirim email ======
-            $emailAddress = strtolower($request->email_addr);
-            $approveSeq = $request->approve_seq;
-            $entityCd   = $request->entity_cd;
-            $docNo      = $request->doc_no;
-            $levelNo    = $request->level_no;
+            $email_address = strtolower($request->email_addr);
+            $approve_seq = $request->approve_seq;
+            $entity_cd   = $request->entity_cd;
+            $doc_no      = $request->doc_no;
+            $level_no    = $request->level_no;
 
-            if (!empty($emailAddress)) {
-                $cacheFile = 'email_sent_' . $approveSeq . '_' . $entityCd . '_' . $docNo . '_' . $levelNo . '.txt';
-                $cacheFilePath = storage_path('app/mail_cache/send_LandFph/' . date('Ymd') . '/' . $cacheFile);
+            if (!empty($email_address)) {
+                $cacheFile = 'email_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
+                $cacheFilePath = storage_path('app/mail_cache/send_Land_Fph/' . date('Ymd') . '/' . $cacheFile);
                 $cacheDirectory = dirname($cacheFilePath);
 
                 if (!file_exists($cacheDirectory)) {
@@ -128,24 +138,24 @@ class LandfphController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // kirim email
-                    Mail::to($emailAddress)->send(new SendLandFphMail($encryptedData, $dataArray));
+                    Mail::to($email_address)->send(new SendLandFphMail($encryptedData, $dataArray));
 
                     file_put_contents($cacheFilePath, 'sent');
-                    Log::channel('sendmailapproval')->info("Email Land FPH doc_no $docNo Entity $entityCd berhasil dikirim ke: $emailAddress");
+                    Log::channel('sendmailapproval')->info("Email Land FPH doc_no $doc_no Entity $entity_cd berhasil dikirim ke: $email_address");
 
-                    $callback['Pesan'] = "Email berhasil dikirim ke: $emailAddress";
+                    $callback['Pesan'] = "Email berhasil dikirim ke: $email_address";
                     $callback['Error'] = false;
                     $callback['Status']= 200;
 
                 } else {
-                    Log::channel('sendmailapproval')->info("Email Land FPH doc_no $docNo Entity $entityCd sudah pernah dikirim ke: $emailAddress");
+                    Log::channel('sendmailapproval')->info("Email Land FPH doc_no $doc_no Entity $entity_cd sudah pernah dikirim ke: $email_address");
 
-                    $callback['Pesan'] = "Email sudah pernah dikirim ke: $emailAddress";
+                    $callback['Pesan'] = "Email sudah pernah dikirim ke: $email_address";
                     $callback['Error'] = false;
                     $callback['Status']= 201;
                 }
             } else {
-                Log::channel('sendmail')->warning("No email address provided for document $docNo");
+                Log::channel('sendmail')->warning("No email address provided for document $doc_no");
 
                 $callback['Pesan'] = "No email address provided";
                 $callback['Error'] = true;
@@ -199,7 +209,7 @@ class LandfphController extends Controller
             'module'        => $data["type_module"],
         );
 
-        $query = DB::connection('pakuwon')
+        $query = DB::connection('BLP')
         ->table('mgr.cb_cash_request_appr')
         ->where($where)
         ->whereIn('status', ["A", "R", "C"])
@@ -216,9 +226,10 @@ class LandfphController extends Controller
                 "Pesan" => $msg,
                 "St" => $st,
                 "notif" => $notif,
-                "image" => $image
+                "image" => $image,
+                "entity_name"   => $data["entity_name"],
             );
-            return view("email.after", $msg1);
+            return view("email.remark.after", $msg1);
         } else {
             $where2 = array(
                 'doc_no'        => $data["doc_no"],
@@ -230,7 +241,7 @@ class LandfphController extends Controller
                 'module'        => $data["type_module"],
             );
     
-            $query2 = DB::connection('pakuwon')
+            $query2 = DB::connection('BLP')
             ->table('mgr.cb_cash_request_appr')
             ->where($where2)
             ->get();
@@ -246,9 +257,10 @@ class LandfphController extends Controller
                     "Pesan" => $msg,
                     "St" => $st,
                     "notif" => $notif,
-                    "image" => $image
+                    "image" => $image,
+                    "entity_name"   => $data["entity_name"],
                 );
-                return view("email.after", $msg1);
+                return view("email.remark.after", $msg1);
             } else {
                 $name   = " ";
                 $bgcolor = " ";
@@ -266,21 +278,18 @@ class LandfphController extends Controller
                     $bgcolor = '#e85347';
                     $valuebt  = 'Cancel';
                 }
-                $dataArray = Crypt::decrypt($encrypt);
                 $data = array(
                     "status"    => $status,
-                    "doc_no"    => $dataArray["doc_no"],
-                    "email"     => $dataArray["email_address"],
+                    "doc_no"    => $data["doc_no"],
+                    "email"     => $data["email_address"],
                     "encrypt"   => $encrypt,
                     "name"      => $name,
                     "bgcolor"   => $bgcolor,
-                    "valuebt"   => $valuebt
+                    "valuebt"   => $valuebt,
+                    "link"      => "landfph",
+                    "entity_name"   => $data["entity_name"],
                 );
-                if ($status === "A") {
-                    return view('email/landfphMail/passchecknoremark', $data);
-                } else {
-                    return view('email/landfphMail/passcheckwithremark', $data);
-                }
+                return view('email/remark/passcheckwithremark', $data);
             }
         }
     }
@@ -303,7 +312,7 @@ class LandfphController extends Controller
         $image = " ";
 
         if (trim($reasonget) == '') {
-            $reason = 'no reason (just Level 1)';
+            $reason = 'no reason';
         } else {
             $reason = $reasonget;
         }
@@ -318,7 +327,7 @@ class LandfphController extends Controller
             $descstatus = "Cancelled";
             $imagestatus = "reject.png";
         }
-        $pdo = DB::connection('pakuwon')->getPdo();
+        $pdo = DB::connection('BLP')->getPdo();
         $sth = $pdo->prepare("EXEC mgr.xrl_send_mail_approval_land_fph ?, ?, ?, ?, ?");
         $success = $sth->execute([
             $data["entity_cd"],
@@ -328,12 +337,12 @@ class LandfphController extends Controller
             $reason
         ]);
         if ($success) {
-            $msg = "You Have Successfully ".$descstatus." the Purchase Requisition No. ".$data["doc_no"];
+            $msg = "You Have Successfully ".$descstatus." the Land FPH No. ".$data["doc_no"];
             $notif = $descstatus." !";
             $st = 'OK';
             $image = $imagestatus;
         } else {
-            $msg = "You Failed to ".$descstatus." the Purchase Requisition No.".$data["doc_no"];
+            $msg = "You Failed to ".$descstatus." the Land FPH No.".$data["doc_no"];
             $notif = 'Fail to '.$descstatus.' !';
             $st = 'FAIL';
             $image = "reject.png";
@@ -342,8 +351,133 @@ class LandfphController extends Controller
             "Pesan" => $msg,
             "St" => $st,
             "notif" => $notif,
-            "image" => $image
+            "image" => $image,
+            'entity_name'   => $request->entity_name,
         );
-        return view("email.after", $msg1);
+        return view("email.remark.after", $msg1);
     }
+
+    public function feedback_fph(Request $request)
+    {
+        $callback = [
+            'Error'  => false,
+            'Pesan'  => '',
+            'Status' => 200,
+        ];
+
+        $action = '';
+        $bodyEMail = '';
+
+        if (strcasecmp($request->status, 'R') == 0) {
+            $action = 'Revision';
+            $bodyEMail = 'Please revise ' . $request->descs . ' with the reason : ' . $request->reason;
+        } else if (strcasecmp($request->status, 'C') == 0) {
+            $action = 'Cancellation';
+            $bodyEMail = $request->descs . ' has been cancelled with the reason : ' . $request->reason;
+        } else if (strcasecmp($request->status, 'A') == 0) {
+            $action = 'Approval';
+            $bodyEMail = 'Your Request ' . $request->descs . ' has been Approved ';
+        }
+
+        // ====== Persiapan data ======
+        $urlArray = array_filter(array_map('trim', explode(';', $request->url_link)), function ($item) {
+            return strtoupper($item) !== 'EMPTY' && $item !== '';
+        });
+
+        $fileArray = array_filter(array_map('trim', explode(';', $request->file_name)), function ($item) {
+            return strtoupper($item) !== 'EMPTY' && $item !== '';
+        });
+
+        $attachments = [];
+        foreach ($urlArray as $key => $url) {
+            if (isset($fileArray[$key])) {
+                $attachments[] = [
+                    'url' => $url,
+                    'file_name' => $fileArray[$key]
+                ];
+            }
+        }
+
+        $EmailBack = [
+            'doc_no'          => $request->doc_no,
+            'action'          => $action,
+            'reason'          => $request->reason,
+            'descs'           => $request->descs,
+            'subject'         => $request->subject,
+            'bodyEMail'       => $bodyEMail,
+            'user_name'       => $request->user_name,
+            'staff_act_send'  => $request->staff_act_send,
+            'entity_name'     => $request->entity_name,
+            'status'          => $request->status,
+            'entity_cd'       => $request->entity_cd,
+            'attachments'     => $attachments,
+            'folderlink'      => 'landfphMail',
+            'action_date'     => Carbon::now('Asia/Jakarta')->format('d-m-Y H:i')
+        ];
+
+        try {
+            $emailAddresses = strtolower($request->email_addr);
+            $entity_cd = $request->entity_cd;
+            $doc_no = $request->doc_no;
+            $status = $request->status;
+            $approve_seq = $request->approve_seq;
+
+            if (!empty($emailAddresses)) {
+                $emails = explode(';', $emailAddresses);
+                $mail = new FeedbackMail($EmailBack);
+                $emailSent = false;
+
+                $cacheFile = 'email_feedback_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $status . '.txt';
+                $cacheFilePath = storage_path('app/mail_cache/feedback/feedback_Land_Fph/' . date('Ymd') . '/' . $cacheFile);
+                $cacheDirectory = dirname($cacheFilePath);
+
+                if (!file_exists($cacheDirectory)) {
+                    mkdir($cacheDirectory, 0755, true);
+                }
+
+                $lockFile = $cacheFilePath . '.lock';
+                $lockHandle = fopen($lockFile, 'w');
+                if (!flock($lockHandle, LOCK_EX)) {
+                    fclose($lockHandle);
+                    throw new Exception('Failed to acquire lock');
+                }
+
+                if (!file_exists($cacheFilePath)) {
+                    Mail::to($emails)->send($mail);
+                    file_put_contents($cacheFilePath, 'sent');
+
+                    $sentTo = implode(', ', $emails);
+                    $logMessage = "Email Feedback {$action} doc_no {$doc_no} Entity {$entity_cd} berhasil dikirim ke: {$sentTo}";
+                    Log::channel('sendmailfeedback')->info($logMessage);
+
+                    $emailSent = true;
+                }
+
+                if ($emailSent) {
+                    $callback['Error'] = false;
+                    $callback['Pesan'] = 'Email berhasil dikirim.';
+                    $callback['Status'] = 200;
+                } else {
+                    $callback['Error'] = false;
+                    $callback['Pesan'] = 'Email sudah dikirim sebelumnya.';
+                    $callback['Status'] = 200;
+                }
+
+            } else {
+                Log::channel('sendmail')->warning('Tidak ada alamat email yang diberikan.');
+                $callback['Error'] = true;
+                $callback['Pesan'] = 'Tidak ada alamat email yang diberikan.';
+                $callback['Status'] = 400;
+            }
+
+        } catch (Exception $e) {
+            Log::channel('sendmail')->error('Gagal mengirim email: ' . $e->getMessage());
+            $callback['Error'] = true;
+            $callback['Pesan'] = 'Gagal mengirim email. Cek log untuk detailnya.';
+            $callback['Status'] = 500;
+        }
+
+        return response()->json($callback, $callback['Status']);
+    }
+
 }

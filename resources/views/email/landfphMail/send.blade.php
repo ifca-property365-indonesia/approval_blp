@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>IFCA - PWON</title>
+  <title>IFCA - Bangun Laksana Persada</title>
 
   <style type="text/css">
     /* Reset */
@@ -57,7 +57,10 @@
           <!-- Header -->
           <tr>
             <td align="center" style="padding-bottom:25px;">
-              <img src="{{ url('public/images/email_header.png') }}" alt="logo" height="56px" style="display:block; border:0; outline:none; text-decoration:none;">
+              <img src="{{ url('public/images/email_header.png') }}" 
+                  alt="logo" 
+                  height="56" 
+                  style="display:inline-block; border:0; outline:none; text-decoration:none;">
               <p style="font-size:16px; color:#026735; margin:10px 0 0;">{{ $dataArray['entity_name'] }}</p>
             </td>
           </tr>
@@ -82,22 +85,21 @@
               </table>
 
               <!-- Attachments -->
-              @php $hasAttachment = false; @endphp
-              @foreach($dataArray['url_link'] as $key => $url_link)
-                @if($url_link && $dataArray['file_name'][$key] && $url_link != 'EMPTY' && $dataArray['file_name'][$key] != 'EMPTY')
-                  @if(!$hasAttachment)
-                    @php $hasAttachment = true; @endphp
-                    <p style="margin:20px 0 10px;">To view detail transaction, please click the link below:</p>
-                  @endif
-                  <a href="{{ $url_link }}" target="_blank" style="color:#026735; text-decoration:none;">{{ $dataArray['file_name'][$key] }}</a><br>
-                @endif
-              @endforeach
+              @if (!empty($dataArray['attachments']) && count($dataArray['attachments']) > 0)
+                  <p style="margin:20px 0 10px;">To view detail transaction, please click the link below:</p>
+                  @foreach($dataArray['attachments'] as $attachment)
+                      <a href="{{ $attachment['url'] }}" target="_blank" style="color:#026735; text-decoration:none;">
+                          {{ $attachment['file_name'] }}
+                      </a><br>
+                  @endforeach
+              @endif
+
 
               <!-- Buttons -->
               <div style="text-align: center; margin: 20px 0;">
-                <a href="{{ url('api') }}/fph/A/{{ $encryptedData }}" class="button" style="display:inline-block; font-size:13px; font-weight:600; text-transform:uppercase; text-decoration:none; background-color:#1ee0ac; color:#ffffff; padding:10px 30px; border-radius:3px;">Approve</a>
-                <a href="{{ url('api') }}/fph/R/{{ $encryptedData }}" class="button" style="display:inline-block; font-size:13px; font-weight:600; text-transform:uppercase; text-decoration:none; background-color:#f4bd0e; color:#ffffff; padding:10px 30px; border-radius:3px;">Revise</a>
-                <a href="{{ url('api') }}/fph/C/{{ $encryptedData }}" class="button" style="display:inline-block; font-size:13px; font-weight:600; text-transform:uppercase; text-decoration:none; background-color:#e85347; color:#ffffff; padding:10px 30px; border-radius:3px;">Reject</a>
+                <a href="{{ url('api') }}/landfph/A/{{ $encryptedData }}" class="button" style="display:inline-block; font-size:13px; font-weight:600; text-transform:uppercase; text-decoration:none; background-color:#1ee0ac; color:#ffffff; padding:10px 30px; border-radius:3px;">Approve</a>
+                <a href="{{ url('api') }}/landfph/R/{{ $encryptedData }}" class="button" style="display:inline-block; font-size:13px; font-weight:600; text-transform:uppercase; text-decoration:none; background-color:#f4bd0e; color:#ffffff; padding:10px 30px; border-radius:3px;">Revise</a>
+                <a href="{{ url('api') }}/landfph/C/{{ $encryptedData }}" class="button" style="display:inline-block; font-size:13px; font-weight:600; text-transform:uppercase; text-decoration:none; background-color:#e85347; color:#ffffff; padding:10px 30px; border-radius:3px;">Reject</a>
               </div>
 
               <p style="margin:15px 0;">In case you need some clarification, kindly approach:<br>
