@@ -421,4 +421,128 @@ class StaffActionController extends Controller
 
         ftp_close($ftp_conn);
     }
+
+    public function feedback_land(Request $request)
+    {
+        $callback = [
+            'Error'  => false,
+            'Pesan'  => '',
+            'Status' => 200,
+        ];
+
+        $action = '';
+        $bodyEMail = '';
+
+        if (strcasecmp($request->status, 'R') == 0) {
+            $action = 'Revision';
+            $bodyEMail = 'Please revise ' . $request->descs . ' with the reason : ' . $request->reason;
+        } else if (strcasecmp($request->status, 'C') == 0) {
+            $action = 'Cancellation';
+            $bodyEMail = $request->descs . ' has been cancelled with the reason : ' . $request->reason;
+        } else if (strcasecmp($request->status, 'A') == 0) {
+            $action = 'Approval';
+            $bodyEMail = 'Your Request ' . $request->descs . ' has been Approved ';
+        }
+
+        // ====== Persiapan data ======
+        $urlArray = array_filter(array_map('trim', explode(';', $request->url_link)), function ($item) {
+            return strtoupper($item) !== 'EMPTY' && $item !== '';
+        });
+
+        $fileArray = array_filter(array_map('trim', explode(';', $request->file_name)), function ($item) {
+            return strtoupper($item) !== 'EMPTY' && $item !== '';
+        });
+
+        $attachments = [];
+        foreach ($urlArray as $key => $url) {
+            if (isset($fileArray[$key])) {
+                $attachments[] = [
+                    'url' => $url,
+                    'file_name' => $fileArray[$key]
+                ];
+            }
+        }
+
+        $EmailBack = [
+            'doc_no'          => $request->doc_no,
+            'action'          => $action,
+            'reason'          => $request->reason,
+            'descs'           => $request->descs,
+            'subject'         => $request->subject,
+            'bodyEMail'       => $bodyEMail,
+            'user_name'       => $request->user_name,
+            'staff_act_send'  => $request->staff_act_send,
+            'descs_send'      => $request->descs_send,
+            'entity_name'     => $request->entity_name,
+            'status'          => $request->status,
+            'entity_cd'       => $request->entity_cd,
+            'attachments'     => $attachments,
+            'folderlink'      => $request->descs_send.'Mail',
+            'action_date'     => Carbon::now('Asia/Jakarta')->format('d-m-Y H:i')
+        ];
+
+        try {
+            $emailAddresses = strtolower($request->email_addr);
+            $entity_cd = $request->entity_cd;
+            $doc_no = $request->doc_no;
+            $status = $request->status;
+            $approve_seq = $request->approve_seq;
+
+            if (!empty($emailAddresses)) {
+                $emails = explode(';', $emailAddresses);
+                $mail = new FeedbackMail($EmailBack);
+                $emailSent = false;
+
+                $cacheFile = 'email_feedback_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $status . '.txt';
+                $cacheFilePath = storage_path('app/mail_cache/feedback/'.$request->descs_send.'/' . date('Ymd') . '/' . $cacheFile);
+                $cacheDirectory = dirname($cacheFilePath);
+
+                if (!file_exists($cacheDirectory)) {
+                    mkdir($cacheDirectory, 0755, true);
+                }
+
+                $lockFile = $cacheFilePath . '.lock';
+                $lockHandle = fopen($lockFile, 'w');
+                if (!flock($lockHandle, LOCK_EX)) {
+                    fclose($lockHandle);
+                    throw new Exception('Failed to acquire lock');
+                }
+
+                if (!file_exists($cacheFilePath)) {
+                    Mail::to($emails)->send($mail);
+                    file_put_contents($cacheFilePath, 'sent');
+
+                    $sentTo = implode(', ', $emails);
+                    $logMessage = "Email Feedback {$action} doc_no {$doc_no} Entity {$entity_cd} berhasil dikirim ke: {$sentTo}";
+                    Log::channel('sendmailfeedback')->info($logMessage);
+
+                    $emailSent = true;
+                }
+
+                if ($emailSent) {
+                    $callback['Error'] = false;
+                    $callback['Pesan'] = 'Email berhasil dikirim.';
+                    $callback['Status'] = 200;
+                } else {
+                    $callback['Error'] = false;
+                    $callback['Pesan'] = 'Email sudah dikirim sebelumnya.';
+                    $callback['Status'] = 200;
+                }
+
+            } else {
+                Log::channel('sendmail')->warning('Tidak ada alamat email yang diberikan.');
+                $callback['Error'] = true;
+                $callback['Pesan'] = 'Tidak ada alamat email yang diberikan.';
+                $callback['Status'] = 400;
+            }
+
+        } catch (Exception $e) {
+            Log::channel('sendmail')->error('Gagal mengirim email: ' . $e->getMessage());
+            $callback['Error'] = true;
+            $callback['Pesan'] = 'Gagal mengirim email. Cek log untuk detailnya.';
+            $callback['Status'] = 500;
+        }
+
+        return response()->json($callback, $callback['Status']);
+    }
 }

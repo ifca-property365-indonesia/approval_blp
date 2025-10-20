@@ -143,3 +143,18 @@ Route::POST('/landverification', [LandVerification::class, 'index']);
 Route::GET('/landverification/{status}/{encrypt}', [LandVerification::class, 'processData']);
 Route::POST('/landverification/getaccess', [LandVerification::class, 'getaccess']);
 Route::POST('/landverification/feedback', [LandVerification::class, 'feedback_verification']);
+
+use App\Http\Controllers\LandMeasuringController as LandMeasuring;
+Route::POST('/landmeasuring', [LandMeasuring::class, 'index']);
+Route::GET('/landmeasuring/{status}/{encrypt}', [LandMeasuring::class, 'processData']);
+Route::POST('/landmeasuring/getaccess', [LandMeasuring::class, 'getaccess']);
+
+use App\Http\Controllers\LandSphController as LandSph;
+Route::POST('/landsph', [LandSph::class, 'index']);
+Route::GET('/landsph/{status}/{encrypt}', [LandSph::class, 'processData']);
+Route::POST('/landsph/getaccess', [LandSph::class, 'getaccess']);
+
+use App\Http\Controllers\LandMapController as LandMap;
+Route::POST('/landmap', [LandMap::class, 'index']);
+Route::GET('/landmap/{status}/{encrypt}', [LandMap::class, 'processData']);
+Route::POST('/landmap/getaccess', [LandMap::class, 'getaccess']);
