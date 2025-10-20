@@ -69,7 +69,7 @@ class LandVerificationController extends Controller
                 'user_name'         => $request->user_name,
                 'sender_addr'       => $request->sender_addr,
                 'sender_name'       => $request->sender_name,
-                'transaction_date'  => \Carbon\Carbon::parse($request->transaction_date)->format('Y-m-d'),
+                'transaction_date' => \Carbon\Carbon::parse($request->transaction_date)->format('d F Y'),
                 'descs'             => $request->descs,
                 "clarify_user"		=> $request->sender_name,
                 "clarify_email"		=> $request->sender_addr,
