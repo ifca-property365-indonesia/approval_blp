@@ -218,7 +218,7 @@ class LandVerificationController extends Controller
                 "image" => $image,
                 "entity_name"   => $data["entity_name"],
             );
-            return view("email.after", $msg1);
+            return view("email.remark.after", $msg1);
         } else {
             $where2 = array(
                 'doc_no'        => $data["doc_no"],
@@ -249,7 +249,7 @@ class LandVerificationController extends Controller
                     "image" => $image,
                     "entity_name"   => $data["entity_name"],
                 );
-                return view("email.after", $msg1);
+                return view("email.remark.after", $msg1);
             } else {
                 $name   = " ";
                 $bgcolor = " ";
@@ -278,7 +278,7 @@ class LandVerificationController extends Controller
                     "link"      => "landverification",
                     "entity_name"   => $data["entity_name"],
                 );
-                return view('email/passcheckwithremark', $data);
+                return view('email/remark/passcheckwithremark', $data);
             }
         }
     }
@@ -343,7 +343,7 @@ class LandVerificationController extends Controller
             "image" => $image,
             'entity_name'   => $request->entity_name,
         );
-        return view("email.after", $msg1);
+        return view("email.remark.after", $msg1);
     }
 
     public function feedback_verification(Request $request)
