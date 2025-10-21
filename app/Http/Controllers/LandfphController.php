@@ -75,7 +75,7 @@ class LandfphController extends Controller
                 'total_amt'         => $total_amt,
                 'book_amt'          => $book_amt,
                 'email_addr'        => $request->email_addr,
-                'transaction_date'  => $request->transaction_date,
+                'transaction_date' => \Carbon\Carbon::parse($request->transaction_date)->format('d F Y'),
                 'user_name'         => $request->user_name,
                 'sender_name'       => $request->sender_name,
                 'sender_addr'       => $request->sender_addr,

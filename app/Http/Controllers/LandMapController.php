@@ -66,7 +66,7 @@ class LandMapController extends Controller
                 'map_land_no'       => $request->map_land_no,
                 'land_title_no'     => $request->land_title_no,
                 'land_area_final'   => $request->land_area_final,
-                'transaction_date'  => $request->transaction_date,
+                'transaction_date' => \Carbon\Carbon::parse($request->transaction_date)->format('d F Y'),
                 'attachments'       => $attachments,
                 'entity_name'       => $request->entity_name,
                 'email_addr'        => $request->email_addr,

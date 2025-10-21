@@ -82,7 +82,7 @@ class LandSphController extends Controller
                 'sph_amt'           => $sph_amt,
                 'book_amt'          => $book_amt,
                 'total_amt'         => $total_amt,
-                'transaction_date'  => $request->transaction_date,
+                'transaction_date' => \Carbon\Carbon::parse($request->transaction_date)->format('d F Y'),
                 "clarify_user"		=> $request->sender_name,
                 "clarify_email"		=> $request->sender_addr,
                 'subject'           => "Need Approval for Land SPH No.  ".$request->doc_no,
