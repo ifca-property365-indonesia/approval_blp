@@ -57,7 +57,10 @@
           <!-- Header -->
           <tr>
             <td align="center" style="padding-bottom:25px;">
-              <img src="{{ url('public/images/PWON-logo.png') }}" alt="logo" width="130" style="display:block;">
+              <img src="{{ url('public/images/email_header.png') }}" 
+                                        alt="logo" 
+                                        height="56" 
+                                        style="display:inline-block; border:0; outline:none; text-decoration:none;">
               <p style="font-size:16px; color:#026735; margin:10px 0 0;">{{ $dataArray['entity_name'] }}</p>
             </td>
           </tr>

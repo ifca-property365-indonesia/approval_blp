@@ -209,7 +209,7 @@ class LandChangeNameController extends Controller
             'module'        => $data["type_module"],
         );
 
-        $query = DB::connection('pakuwon')
+        $query = DB::connection('BLP')
         ->table('mgr.cb_cash_request_appr')
         ->where($where)
         ->whereIn('status', ["A", "R", "C"])
@@ -241,7 +241,7 @@ class LandChangeNameController extends Controller
                 'module'        => $data["type_module"],
             );
     
-            $query2 = DB::connection('pakuwon')
+            $query2 = DB::connection('BLP')
             ->table('mgr.cb_cash_request_appr')
             ->where($where2)
             ->get();
@@ -327,7 +327,7 @@ class LandChangeNameController extends Controller
             $descstatus = "Cancelled";
             $imagestatus = "reject.png";
         }
-        $pdo = DB::connection('pakuwon')->getPdo();
+        $pdo = DB::connection('BLP')->getPdo();
         $sth = $pdo->prepare("EXEC mgr.xrl_send_mail_approval_land_change_name ?, ?, ?, ?, ?");
         $success = $sth->execute([
             $data["entity_cd"],
