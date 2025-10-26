@@ -159,3 +159,13 @@ use App\Http\Controllers\LandMapController as LandMap;
 Route::POST('/landmap', [LandMap::class, 'index']);
 Route::GET('/landmap/{status}/{encrypt}', [LandMap::class, 'processData']);
 Route::POST('/landmap/getaccess', [LandMap::class, 'getaccess']);
+
+use App\Http\Controllers\LandChangeNameController as LandChangeName;
+Route::POST('/landchangename', [LandChangeName::class, 'index']);
+Route::GET('/landchangename/{status}/{encrypt}', [LandChangeName::class, 'processData']);
+Route::POST('/landchangename/getaccess', [LandChangeName::class, 'getaccess']);
+
+use App\Http\Controllers\LandVerificationPaymentController as LandVerificationPayment;
+Route::POST('/landverificationpayment', [LandVerificationPayment::class, 'index']);
+Route::GET('/landverificationpayment/{status}/{encrypt}', [LandVerificationPayment::class, 'processData']);
+Route::POST('/landverificationpayment/getaccess', [LandVerificationPayment::class, 'getaccess']);
