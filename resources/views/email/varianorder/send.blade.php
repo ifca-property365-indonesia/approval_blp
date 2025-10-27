@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="application/pdf">
     <meta name="x-apple-disable-message-reformatting">
     <title>IFCA - Bangun Laksana Persada</title>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url('public/images/KuraKuraBali-iconew.ico') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url('public/images/email_header.ico') }}">
     
     <style>
         body {
