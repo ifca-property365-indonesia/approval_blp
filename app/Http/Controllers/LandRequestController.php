@@ -316,7 +316,7 @@ class LandRequestController extends Controller
             $descstatus = "Cancelled";
             $imagestatus = "reject.png";
         }
-        $pdo = DB::connection('pakuwon')->getPdo();
+        $pdo = DB::connection('BLP')->getPdo();
         $sth = $pdo->prepare("EXEC mgr.xrl_send_mail_approval_land_request ?, ?, ?, ?, ?");
         $success = $sth->execute([
             $data["entity_cd"],
