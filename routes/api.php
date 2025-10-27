@@ -169,3 +169,8 @@ use App\Http\Controllers\LandVerificationPaymentController as LandVerificationPa
 Route::POST('/landverificationpayment', [LandVerificationPayment::class, 'index']);
 Route::GET('/landverificationpayment/{status}/{encrypt}', [LandVerificationPayment::class, 'processData']);
 Route::POST('/landverificationpayment/getaccess', [LandVerificationPayment::class, 'getaccess']);
+
+use App\Http\Controllers\LandMeasuringSftController as LandMeasuringSft;
+Route::POST('/landmeasuringsft', [LandMeasuringSft::class, 'index']);
+Route::GET('/landmeasuringsft/{status}/{encrypt}', [LandMeasuringSft::class, 'processData']);
+Route::POST('/landmeasuringsft/getaccess', [LandMeasuringSft::class, 'getaccess']);
