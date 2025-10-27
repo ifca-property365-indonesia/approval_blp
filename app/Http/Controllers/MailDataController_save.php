@@ -136,7 +136,7 @@ class MailDataController extends Controller
                 {
                     return view('email/por/passcheckwithremark', $data);
                 } else {
-                    return view('email/passcheckwithremark', $data);
+                    return view('email/remark/passcheckwithremark', $data);
                 }
                 Artisan::call('config:cache');
             }
