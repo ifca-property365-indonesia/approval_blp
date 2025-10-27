@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="x-apple-disable-message-reformatting">
     <title>IFCA - PWON</title>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url('public/images/pakuwon_icon.ico') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url('public/images/BLP_icon.ico') }}">
     
     <style>
         body {

@@ -234,7 +234,7 @@ class LandMergeShgbController extends Controller
                 'module'        => $data["type_module"],
             );
     
-            $query2 = DB::connection('pakuwon')
+            $query2 = DB::connection('BLP')
             ->table('mgr.cb_cash_request_appr')
             ->where($where2)
             ->get();
