@@ -197,7 +197,7 @@ class LandMeasuringSftController extends Controller
             'module'        => $data["type_module"],
         );
 
-        $query = DB::connection('pakuwon')
+        $query = DB::connection('BLP')
         ->table('mgr.cb_cash_request_appr')
         ->where($where)
         ->whereIn('status', ["A", "R", "C"])
