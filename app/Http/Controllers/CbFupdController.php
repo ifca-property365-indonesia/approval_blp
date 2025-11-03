@@ -9,147 +9,296 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use App\Mail\SendCbFupdMail;
+use App\Mail\SendCbMail;
 use Exception;
+use Carbon\Carbon;
 
 class CbFupdController extends Controller
 {
-    public function processModule($data)
+    public function index(Request $request)
     {
-        if (strpos($data["band_hd_descs"], "\n") !== false) {
-            $band_hd_descs = str_replace("\n", ' (', $data["band_hd_descs"]) . ')';
-        } else {
-            $band_hd_descs = $data["band_hd_descs"];
-        }
-
-        $dt_amount = number_format($data["dt_amount"], 2, '.', ',');
-
-        $list_of_urls = explode('; ', $data["url_file"]);
-        $list_of_files = explode('; ', $data["file_name"]);
-
-        $url_data = [];
-        $file_data = [];
-
-        foreach ($list_of_urls as $url) {
-            $url_data[] = $url;
-        }
-
-        foreach ($list_of_files as $file) {
-            $file_data[] = $file;
-        }
-
-        $list_of_approve = explode('; ',  $data["approve_exist"]);
-        $approve_data = [];
-        foreach ($list_of_approve as $approve) {
-            $approve_data[] = $approve;
-        }
-
-        $dataArray = array(
-            'module'        => "CbFupd",
-            'sender'        => $data["sender"],
-            'sender_addr'   => $data["sender_addr"],
-            'entity_name'   => $data["entity_name"],
-            'band_hd_descs' => $band_hd_descs,
-            'band_hd_no'    => $data["band_hd_no"],
-            'bank_from'     => $data["bank_from"],
-            'bank_to'       => $data["bank_to"],
-            'dt_amount'     => $dt_amount,
-            'url_file'      => $url_data,
-            'file_name'     => $file_data,
-            'user_name'     => $data["user_name"],
-            'reason'        => $data["reason"],
-            'approve_list'  => $approve_data,
-            'clarify_user'  => $data['clarify_user'],
-            'clarify_email' => $data['clarify_email'],
-            'body'          => "Please approve Propose Transfer to Bank No. ".$data['band_hd_no']." for ".$band_hd_descs,
-            'subject'       => "Need Approval for Propose Transfer to Bank No. ".$data['band_hd_no'],
-        );
-
-        $data2Encrypt = array(
-            'entity_cd'     => $data["entity_cd"],
-            'project_no'    => $data["project_no"],
-            'doc_no'        => $data["doc_no"],
-            'trx_type'      => $data["trx_type"],
-            'level_no'      => $data["level_no"],
-            'email_address' => $data["email_addr"],
-            'usergroup'     => $data["usergroup"],
-            'user_id'       => $data["user_id"],
-            'supervisor'    => $data["supervisor"],
-            'type'          => 'E',
-            'type_module'   => 'CB',
-            'text'          => 'Propose Transfer to Bank'
-        );
-
-        // var_dump($data2Encrypt);
-
-        // Melakukan enkripsi pada $dataArray
-        $encryptedData = Crypt::encrypt($data2Encrypt);
+        $callback = [
+            'data'  => null,
+            'Error' => false,
+            'Pesan' => '',
+            'Status'=> 200
+        ];
 
         try {
-            $emailAddresses = strtolower($data["email_addr"]);
-            $approve_seq = $data["approve_seq"];
-            $entity_cd = $data["entity_cd"];
-            $doc_no = $data["doc_no"];
-            $level_no = $data["level_no"];
-            $entity_name = $data["entity_name"];
+            // ====== Persiapan data ======
+            // Ambil dan bersihkan URL
+            $urlArray = array_filter(array_map('trim', explode(';', $request->url_link)), function($item) {
+                return strtoupper($item) !== 'EMPTY' && $item !== '';
+            });
 
-            // Check if email addresses are provided and not empty
-            if (!empty($emailAddresses)) {
-                $email = $emailAddresses; // Since $emailAddresses is always a single email address (string)
+            // Ambil file name yang sesuai dengan URL
+            $fileArray = array_filter(array_map('trim', explode(';', $request->file_name)), function($item) {
+                return strtoupper($item) !== 'EMPTY' && $item !== '';
+            });
 
-                // Check if the email has been sent before for this document
+            // Jika jumlah URL dan file_name tidak sama, pastikan pasangannya sama
+            $attachments = [];
+            foreach ($urlArray as $key => $url) {
+                if (isset($fileArray[$key])) {
+                    $attachments[] = [
+                        'url' => $url,
+                        'file_name' => $fileArray[$key]
+                    ];
+                }
+            }
+
+            $list_of_approve = explode('; ', $request->approve_exist);
+            $approve_data = [];
+            foreach ($list_of_approve as $approve) {
+                $approve_data[] = $approve;
+            }
+
+            $sph_amt = number_format($request->sph_amt, 2, '.', ',');
+            $book_amt = number_format($request->book_amt, 2, '.', ',');
+            $total_amt = number_format($request->total_amt, 2, '.', ',');
+            $laf = number_format($request->laf, 2, '.', ',');
+            $baf = number_format($request->baf, 2, '.', ',');
+
+            $dataArray = [
+                'user_id'           => $request->user_id,
+                'level_no'          => $request->level_no,
+                'entity_cd'         => $request->entity_cd,
+                'doc_no'            => $request->doc_no,
+                'approve_seq'       => $request->approve_seq,
+                'email_addr'        => $request->email_addr,
+                'user_name'         => $request->user_name,
+                'sender_addr'       => $request->sender_addr,
+                'sender_name'       => $request->sender_name,
+                'entity_name'       => $request->entity_name,
+                'attachments'       => $attachments,
+                'descs'             => $request->descs,
+                'approve_list'      => $approve_data,
+                'nop_no'            => $request->nop_no,
+                'name_owner'        => $request->name_owner,
+                'land_title_no'     => $request->land_title_no,
+                'land_title_name'   => $request->land_title_name,
+                'laf'               => $laf,
+                'baf'               => $baf,
+                'sph_amt'           => $sph_amt,
+                'book_amt'          => $book_amt,
+                'total_amt'         => $total_amt,
+                'transaction_date' => \Carbon\Carbon::parse($request->transaction_date)->format('d F Y'),
+                "clarify_user"		=> $request->sender_name,
+                "clarify_email"		=> $request->sender_addr,
+                'subject'           => "Need Approval for Land SPH No.  ".$request->doc_no,
+                'link'              => 'landsph',
+            ];
+
+            // dd($dataArray);
+
+            $data2Encrypt = [
+                'entity_cd'     => $request->entity_cd,
+                'email_address' => $request->email_addr,
+                'level_no'      => $request->level_no,
+                'approve_seq'   => $request->approve_seq,
+                'doc_no'        => $request->doc_no,
+                'entity_name'   => $request->entity_name,
+                'type'          => 'S',
+                'type_module'   => 'LM',
+                'text'          => 'Land SPH',
+            ];
+
+            $encryptedData = Crypt::encrypt($data2Encrypt);
+
+            // isi callback data secara konsisten
+            $callback['data'] = [
+                'payload'   => $dataArray,
+                'encrypted' => $encryptedData
+            ];
+
+            // ====== Proses kirim email ======
+            $email_address = strtolower($request->email_addr);
+            $approve_seq = $request->approve_seq;
+            $entity_cd   = $request->entity_cd;
+            $doc_no      = $request->doc_no;
+            $level_no    = $request->level_no;
+
+            if (!empty($email_address)) {
                 $cacheFile = 'email_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
-                $cacheFilePath = storage_path('app/mail_cache/send_cbfupd/' . date('Ymd') . '/' . $cacheFile);
+                $cacheFilePath = storage_path('app/mail_cache/send_Land_SPH/' . date('Ymd') . '/' . $cacheFile);
                 $cacheDirectory = dirname($cacheFilePath);
 
-                // Ensure the directory exists
                 if (!file_exists($cacheDirectory)) {
                     mkdir($cacheDirectory, 0755, true);
                 }
 
-                // Acquire an exclusive lock
                 $lockFile = $cacheFilePath . '.lock';
                 $lockHandle = fopen($lockFile, 'w');
                 if (!flock($lockHandle, LOCK_EX)) {
-                    // Failed to acquire lock, handle appropriately
                     fclose($lockHandle);
                     throw new Exception('Failed to acquire lock');
                 }
 
                 if (!file_exists($cacheFilePath)) {
-                    // Send email
-                    $mail = Mail::to($email)
- 		       
-		       ->send(new SendCbFupdMail($encryptedData, $dataArray, 'IFCA SOFTWARE - ' . $entity_name));
+                    // kirim email
+                    Mail::to($email_address)->send(new SendLandMail($encryptedData, $dataArray));
 
-                    // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
+                    Log::channel('sendmailapproval')->info("Email Land SPH doc_no $doc_no Entity $entity_cd berhasil dikirim ke: $email_address");
 
-                    // Log the success
-                    Log::channel('sendmailapproval')->info('Email CB FUPD doc_no '.$doc_no.' Entity ' . $entity_cd.' berhasil dikirim ke: ' . $email);
-                    return 'Email berhasil dikirim ke: ' . $email;
+                    $callback['Pesan'] = "Email berhasil dikirim ke: $email_address";
+                    $callback['Error'] = false;
+                    $callback['Status']= 200;
+
                 } else {
-                    // Email was already sent
-                    Log::channel('sendmailapproval')->info('Email CB FUPD doc_no '.$doc_no.' Entity ' . $entity_cd.' already sent to: ' . $email);
-                    return 'Email has already been sent to: ' . $email;
+                    Log::channel('sendmailapproval')->info("Email Land SPH doc_no $doc_no Entity $entity_cd sudah pernah dikirim ke: $email_address");
+
+                    $callback['Pesan'] = "Email sudah pernah dikirim ke: $email_address";
+                    $callback['Error'] = false;
+                    $callback['Status']= 201;
                 }
             } else {
-                // No email address provided
-                Log::channel('sendmail')->warning("No email address provided for document " . $doc_no);
-                return "No email address provided";
+                Log::channel('sendmail')->warning("No email address provided for document $doc_no");
+
+                $callback['Pesan'] = "No email address provided";
+                $callback['Error'] = true;
+                $callback['Status']= 400;
             }
+
         } catch (\Exception $e) {
-            Log::channel('sendmail')->error('Gagal mengirim email: ' . $e->getMessage());
-            return "Gagal mengirim email: " . $e->getMessage();
+            Log::channel('sendmail')->error("Gagal mengirim email: " . $e->getMessage());
+
+            $callback['Pesan'] = "Gagal mengirim email: " . $e->getMessage();
+            $callback['Error'] = true;
+            $callback['Status']= 500;
         }
+
+        return response()->json($callback, $callback['Status']);
     }
 
-    public function update($status, $encrypt, $reason)
+    public function processData($status='', $encrypt='')
     {
         Artisan::call('config:cache');
         Artisan::call('cache:clear');
         Cache::flush();
+
+        $cacheKey = 'processData_' . $encrypt;
+
+        // Check if the data is already cached
+        if (Cache::has($cacheKey)) {
+            // If cached data exists, clear it
+            Cache::forget($cacheKey);
+        }
+
+        $query = 0;
+        $query2 = 0;
+        
         $data = Crypt::decrypt($encrypt);
+
+        $msg = " ";
+        $msg1 = " ";
+        $notif = " ";
+        $st = " ";
+        $image = " ";
+
+        Log::info('Decrypted data: ' . json_encode($data));
+
+        $where = array(
+            'doc_no'        => $data["doc_no"],
+            'entity_cd'     => $data["entity_cd"],
+            'approve_seq'   => $data["approve_seq"],
+            'level_no'      => $data["level_no"],
+            'type'          => $data["type"],
+            'module'        => $data["type_module"],
+        );
+
+        $query = DB::connection('BLP')
+        ->table('mgr.cb_cash_request_appr')
+        ->where($where)
+        ->whereIn('status', ["A", "R", "C"])
+        ->get();
+
+        Log::info('First query result: ' . json_encode($query));
+
+        if (count($query)>0) {
+            $msg = 'You Have Already Made a Request to '.$data["text"].' No. '.$data["doc_no"] ;
+            $notif = 'Restricted !';
+            $st  = 'OK';
+            $image = "double_approve.png";
+            $msg1 = array(
+                "Pesan" => $msg,
+                "St" => $st,
+                "notif" => $notif,
+                "image" => $image,
+                "entity_name"   => $data["entity_name"],
+            );
+            return view("email.remark.after", $msg1);
+        } else {
+            $where2 = array(
+                'doc_no'        => $data["doc_no"],
+                'status'        => 'P',
+                'entity_cd'     => $data["entity_cd"],
+                'approve_seq'   => $data["approve_seq"],
+                'level_no'      => $data["level_no"],
+                'type'          => $data["type"],
+                'module'        => $data["type_module"],
+            );
+    
+            $query2 = DB::connection('BLP')
+            ->table('mgr.cb_cash_request_appr')
+            ->where($where2)
+            ->get();
+    
+            Log::info('Second query result: ' . json_encode($query2));
+
+            if (count($query2) == 0) {
+                $msg = 'There is no '.$data["text"].' with No. '.$data["doc_no"] ;
+                $notif = 'Restricted !';
+                $st  = 'OK';
+                $image = "double_approve.png";
+                $msg1 = array(
+                    "Pesan" => $msg,
+                    "St" => $st,
+                    "notif" => $notif,
+                    "image" => $image,
+                    "entity_name"   => $data["entity_name"],
+                );
+                return view("email.remark.after", $msg1);
+            } else {
+                $name   = " ";
+                $bgcolor = " ";
+                $valuebt  = " ";
+                if ($status == 'A') {
+                    $name   = 'Approval';
+                    $bgcolor = '#40de1d';
+                    $valuebt  = 'Approve';
+                } else if ($status == 'R') {
+                    $name   = 'Revision';
+                    $bgcolor = '#f4bd0e';
+                    $valuebt  = 'Revise';
+                } else {
+                    $name   = 'Cancellation';
+                    $bgcolor = '#e85347';
+                    $valuebt  = 'Cancel';
+                }
+                $data = array(
+                    "status"    => $status,
+                    "doc_no"    => $data["doc_no"],
+                    "email"     => $data["email_address"],
+                    "encrypt"   => $encrypt,
+                    "name"      => $name,
+                    "bgcolor"   => $bgcolor,
+                    "valuebt"   => $valuebt,
+                    "link"      => "landsph",
+                    "entity_name"   => $data["entity_name"],
+                );
+                return view('email/remark/passcheckwithremark', $data);
+            }
+        }
+    }
+
+    public function getaccess(Request $request)
+    {
+        $data = Crypt::decrypt($request->encrypt);
+
+        $status = $request->status;
+
+        $reasonget = $request->reason;
 
         $descstatus = " ";
         $imagestatus = " ";
@@ -159,6 +308,12 @@ class CbFupdController extends Controller
         $notif = " ";
         $st = " ";
         $image = " ";
+
+        if (trim($reasonget) == '') {
+            $reason = 'no reason';
+        } else {
+            $reason = $reasonget;
+        }
 
         if ($status == "A") {
             $descstatus = "Approved";
@@ -171,37 +326,32 @@ class CbFupdController extends Controller
             $imagestatus = "reject.png";
         }
         $pdo = DB::connection('BLP')->getPdo();
-        $sth = $pdo->prepare("SET NOCOUNT ON; EXEC mgr.x_send_mail_approval_cb_fupd ?, ?, ?, ?, ?, ?, ?, ?, ?, ?;");
-        $sth->bindParam(1, $data["entity_cd"]);
-        $sth->bindParam(2, $data["project_no"]);
-        $sth->bindParam(3, $data["doc_no"]);
-        $sth->bindParam(4, $data["trx_type"]);
-        $sth->bindParam(5, $status);
-        $sth->bindParam(6, $data["level_no"]);
-        $sth->bindParam(7, $data["usergroup"]);
-        $sth->bindParam(8, $data["user_id"]);
-        $sth->bindParam(9, $data["supervisor"]);
-        $sth->bindParam(10, $reason);
-        $sth->execute();
-        if ($sth == true) {
-            $msg = "You Have Successfully ".$descstatus." the Propose Transfer to Bank No. ".$data["doc_no"];
+        $sth = $pdo->prepare("EXEC mgr.xrl_send_mail_approval_land_sph ?, ?, ?, ?, ?");
+        $success = $sth->execute([
+            $data["entity_cd"],
+            $data["doc_no"],
+            $status,
+            $data["level_no"],
+            $reason
+        ]);
+        if ($success) {
+            $msg = "You Have Successfully ".$descstatus." the Land SPH No. ".$data["doc_no"];
             $notif = $descstatus." !";
             $st = 'OK';
             $image = $imagestatus;
         } else {
-            $msg = "You Failed to ".$descstatus." the Propose Transfer to Bank No.".$data["doc_no"];
+            $msg = "You Failed to ".$descstatus." the Land SPH No.".$data["doc_no"];
             $notif = 'Fail to '.$descstatus.' !';
-            $st = 'OK';
+            $st = 'FAIL';
             $image = "reject.png";
         }
         $msg1 = array(
             "Pesan" => $msg,
             "St" => $st,
             "notif" => $notif,
-            "image" => $image
+            "image" => $image,
+            'entity_name'   => $request->entity_name,
         );
-        return view("email.after", $msg1);
-        Artisan::call('config:cache');
-        Artisan::call('cache:clear');
+        return view("email.remark.after", $msg1);
     }
 }
