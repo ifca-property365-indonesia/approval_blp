@@ -52,7 +52,7 @@
         <![endif]-->
 
         <!-- Main Container -->
-        <table role="presentation" width="100%" class="main-container" style="max-width:600px; background-color:#ffffff; border-collapse:collapse;">
+        <table role="presentation" width="100%" class="main-container" style="max-width:1024px; background-color:#ffffff; border-collapse:collapse;">
           
           <!-- Header -->
           <tr>
@@ -74,46 +74,100 @@
               <!-- Detail Table -->
               <table role="presentation" cellpadding="4" cellspacing="0" border="0" width="100%" style="font-size:14px; color:#000000;">
                 <tr>
-                  <th style="border: 1px solid #dddddd;text-align: center;padding: 8px;">No. SHGB</th>
-                  <th style="border: 1px solid #dddddd;text-align: center;padding: 8px;">No. SPPT</th>
-                  <th style="border: 1px solid #dddddd;text-align: center;padding: 8px;">Nama</th>
-                  <th style="border: 1px solid #dddddd;text-align: center;padding: 8px;">Luas SHGB</th>
-                  <th style="border: 1px solid #dddddd;text-align: center;padding: 8px;">Diserahkan pada</th>
-                  <th style="border: 1px solid #dddddd;text-align: center;padding: 8px;">Nama Customer</th>
-                  <th style="border: 1px solid #dddddd;text-align: center;padding: 8px;">Tanggal Serah Terima</th>
-                  <th style="border: 1px solid #dddddd;text-align: center;padding: 8px;">Keterangan</th>
-              </tr>
-              @if(isset($dataArray['shgb_no']) && is_array($dataArray['shgb_no']) && count($dataArray['shgb_no']) > 0)
-                  <!-- Find and display the first merge -->
-                  @if(isset($dataArray['shgb_no'][0]))
-                      <tr>
-                          <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['shgb_no'][0] }} </td>
-                          <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['nop_no'][0] }} </td>
-                          <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['shgb_name'][0] }} </td>
-                          <td style="border: 1px solid #dddddd;padding: 8px;text-align: right;">{{ $data['shgb_area'][0] }} </td>
-                          <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['handover_to'][0] }} </td>
-                          <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['customer_name'][0] }} </td>
-                          <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['transaction_date'][0] }} </td>
-                          <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['remarks'][0] }} </td>
-
-                      </tr>  
-                  @endif
-
-                  <!-- Display other merges -->
-                  @for($i = 1; $i < count($dataArray['shgb_no']); $i++)
-                      @if(isset($dataArray['shgb_no'][$i], $dataArray['nop_no'][$i]))
+                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">No. SHGB</th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Nama</th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Luas SHGB</th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Diserahkan pada</th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Nama Customer</th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Tanggal Serah Terima</th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Keterangan</th>
+                </tr>
+                @if(isset($dataArray['shgb_no']))
+                  @if(is_array($dataArray['shgb_no']))
+                      @foreach($dataArray['shgb_no'] as $i => $no)
                           <tr>
-                            <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['shgb_no'][$i] }} </td>
-                            <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['nop_no'][$i] }} </td>
-                            <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['shgb_name'][$i] }} </td>
-                            <td style="border: 1px solid #dddddd;padding: 8px;text-align: right;">{{ $data['shgb_area'][$i] }} </td>
-                            <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['handover_to'][$i] }} </td>
-                            <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['customer_name'][$i] }} </td>
-                            <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['transaction_date'][$i] }} </td>
-                            <td style="border: 1px solid #dddddd;padding: 8px;">{{ $data['remarks'][$i] }} </td>
+                              {{-- Kolom SHGB --}}
+                              <td style="border: 1px solid #000000;padding: 8px;">{{ $no }}</td>
+
+                              {{-- Kolom Nama SHGB --}}
+                              <td style="border: 1px solid #000000;padding: 8px;">{{ $dataArray['shgb_name'][$i] ?? '' }}</td>
+
+                              {{-- Kolom Luas Area --}}
+                              <td style="border: 1px solid #000000;padding: 8px;text-align:right;">{{ $dataArray['shgb_area'][$i] ?? '' }}</td>
+
+                              {{-- Kolom Handover To --}}
+                              <td style="border: 1px solid #000000;padding: 8px;">
+                                  {{ is_array($dataArray['handover_to'] ?? '') 
+                                      ? implode('; ', $dataArray['handover_to']) 
+                                      : ($dataArray['handover_to'] ?? '') }}
+                              </td>
+
+                              {{-- Kolom Customer Name (opsional, jika ada) --}}
+                              @if(isset($dataArray['customer_name']))
+                                  <td style="border: 1px solid #000000;padding: 8px;">
+                                      {{ is_array($dataArray['customer_name'] ?? '') 
+                                          ? implode('; ', $dataArray['customer_name']) 
+                                          : ($dataArray['customer_name'] ?? '') }}
+                                  </td>
+                              @endif
+                              
+                              {{-- Kolom transaction_date (opsional, jika ada) --}}
+                              @if(isset($dataArray['transaction_date']))
+                                  <td style="border: 1px solid #000000;padding: 8px;">
+                                      {{ is_array($dataArray['transaction_date'] ?? '') 
+                                          ? implode('; ', $dataArray['transaction_date']) 
+                                          : ($dataArray['transaction_date'] ?? '') }}
+                                  </td>
+                              @endif
+
+                              {{-- Kolom Remarks (opsional, jika ada) --}}
+                              @if(isset($dataArray['remarks']))
+                                  <td style="border: 1px solid #000000;padding: 8px;">
+                                      {{ is_array($dataArray['remarks'] ?? '') 
+                                          ? implode('; ', $dataArray['remarks']) 
+                                          : ($dataArray['remarks'] ?? '') }}
+                                  </td>
+                              @endif
+
                           </tr>
-                      @endif
-                  @endfor
+                      @endforeach
+                  @else
+                      <tr>
+                          {{-- Versi single SHGB --}}
+                          <td style="border: 1px solid #000000;padding: 8px;">{{ $dataArray['shgb_no'] }}</td>
+                          <td style="border: 1px solid #000000;padding: 8px;">{{ $dataArray['shgb_name'] ?? '' }}</td>
+                          <td style="border: 1px solid #000000;padding: 8px;text-align:right;">{{ $dataArray['shgb_area'] ?? '' }}</td>
+                          <td style="border: 1px solid #000000;padding: 8px;">
+                              {{ is_array($dataArray['handover_to'] ?? '') 
+                                  ? implode('; ', $dataArray['handover_to']) 
+                                  : ($dataArray['handover_to'] ?? '') }}
+                          </td>
+
+                          @if(isset($dataArray['customer_name']))
+                              <td style="border: 1px solid #000000;padding: 8px;">
+                                  {{ is_array($dataArray['customer_name'] ?? '') 
+                                      ? implode('; ', $dataArray['customer_name']) 
+                                      : ($dataArray['customer_name'] ?? '') }}
+                              </td>
+                          @endif
+                          
+                          @if(isset($dataArray['transaction_date']))
+                              <td style="border: 1px solid #000000;padding: 8px;">
+                                  {{ is_array($dataArray['transaction_date'] ?? '') 
+                                      ? implode('; ', $dataArray['transaction_date']) 
+                                      : ($dataArray['transaction_date'] ?? '') }}
+                              </td>
+                          @endif
+                          
+                          @if(isset($dataArray['remarks']))
+                              <td style="border: 1px solid #000000;padding: 8px;">
+                                  {{ is_array($dataArray['remarks'] ?? '') 
+                                      ? implode('; ', $dataArray['remarks']) 
+                                      : ($dataArray['remarks'] ?? '') }}
+                              </td>
+                          @endif
+                      </tr>
+                  @endif
               @endif
               </table>
 

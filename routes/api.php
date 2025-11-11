@@ -18,6 +18,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+use App\Http\Controllers\MailDataController as MailData;
+Route::POST('/maildata', [MailData::class, 'receive']);
+Route::GET('/processdata/{module}/{status}/{encrypt}', [MailData::class, 'processData']);
+Route::POST('/getaccess', [MailData::class, 'getAccess']);
+
+use App\Http\Controllers\PurchaseSelectionController as Selection;
+Route::POST('/purchase_selection', [Selection::class, 'Mail']);
+Route::GET('/poselection/{status}/{encrypt}', [Selection::class, 'processData']);
+Route::POST('/poselection/getaccess', [Selection::class, 'getaccess']);
+Route::POST('/pos/getaccess', [Selection::class, 'getaccess']);
+
+use App\Http\Controllers\CbPpuController as CbPPu;
+Route::POST('/cbppu', [CbPPu::class, 'Mail']);
+Route::GET('/cbppu/{status}/{encrypt}', [CbPPu::class, 'processData']);
+Route::POST('/cbppu/getaccess', [CbPPu::class, 'getaccess']);
+
 use App\Http\Controllers\StaffActionController as StaffAction;
 Route::POST('/staffaction', [StaffAction::class, 'staffaction']);
 Route::POST('/staffaction_por', [StaffAction::class, 'staffaction_por']);
@@ -155,3 +171,8 @@ use App\Http\Controllers\CbFupdController as CbFupd;
 Route::POST('/cbfupb', [CbFupd::class, 'index']);
 Route::GET('/cbfupb/{status}/{encrypt}', [CbFupd::class, 'processData']);
 Route::POST('/cbfupb/getaccess', [CbFupd::class, 'getaccess']);
+
+use App\Http\Controllers\PlOverwriteController as PlOverwrite;
+Route::POST('/ploverwrite', [PlOverwrite::class, 'index']);
+Route::GET('/ploverwrite/{status}/{encrypt}', [PlOverwrite::class, 'processData']);
+Route::POST('/ploverwrite/getaccess', [PlOverwrite::class, 'getaccess']);

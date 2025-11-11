@@ -13,7 +13,7 @@ use App\Mail\SendLandMail;
 use Exception;
 use Carbon\Carbon;
 
-class LandVerificationPaymentController extends Controller
+class PlOverwriteController extends Controller
 {
     public function index(Request $request)
     {
@@ -25,28 +25,6 @@ class LandVerificationPaymentController extends Controller
         ];
 
         try {
-            // ====== Persiapan data ======
-            // Ambil dan bersihkan URL
-            $urlArray = array_filter(array_map('trim', explode(';', $request->url_link)), function($item) {
-                return strtoupper($item) !== 'EMPTY' && $item !== '';
-            });
-
-            // Ambil file name yang sesuai dengan URL
-            $fileArray = array_filter(array_map('trim', explode(';', $request->file_name)), function($item) {
-                return strtoupper($item) !== 'EMPTY' && $item !== '';
-            });
-
-            // Jika jumlah URL dan file_name tidak sama, pastikan pasangannya sama
-            $attachments = [];
-            foreach ($urlArray as $key => $url) {
-                if (isset($fileArray[$key])) {
-                    $attachments[] = [
-                        'url' => $url,
-                        'file_name' => $fileArray[$key]
-                    ];
-                }
-            }
-
             $list_of_approve = explode('; ', $request->approve_exist);
             $approve_data = [];
             foreach ($list_of_approve as $approve) {
@@ -58,6 +36,7 @@ class LandVerificationPaymentController extends Controller
                 'user_id'               => $request->user_id,
                 'level_no'              => $request->level_no,
                 'entity_cd'             => $request->entity_cd,
+                'project_no'            => $request->project_no,
                 'doc_no'                => $request->doc_no,
                 'approve_seq'           => $request->approve_seq,
                 'email_addr'            => $request->email_addr,
@@ -65,38 +44,28 @@ class LandVerificationPaymentController extends Controller
                 'sender_addr'           => $request->sender_addr,
                 'sender_name'           => $request->sender_name,
                 'entity_name'           => $request->entity_name,
-                'attachments'           => $attachments,
+                'descs'                 => $request->descs,
+                'approve_list'          => $approve_data,
+                'amount'                => number_format((float)$request->amount, 2, '.', ','),
                 'clarify_user'		    => $request->sender_name,
                 'clarify_email'		    => $request->sender_addr,
-                'approve_list'          => $approve_data,
-                'verification_no'       => $request->verification_no,
-                'land_title_no'         => $request->land_title_no,
-                'land_title_area'       => $request->land_title_area,
-                'book_no'               => $request->book_no,
-                'incoming_form_no'      => $request->incoming_form_no,
-                'sph_amt_m2'            => number_format((float)$request->sph_amt_m2, 2, '.', ','),
-                'pph_amt'               => number_format((float)$request->pph_amt, 2, '.', ','),
-                'bphtb_amt'               => number_format((float)$request->bphtb_amt, 2, '.', ','),
-                'submission_tax_no'     => $request->submission_tax_no,
-                'pph_payment_date'      => \Carbon\Carbon::parse($request->pph_payment_date)->format('d F Y'),
-                'pph_reg_date'          => \Carbon\Carbon::parse($request->pph_reg_date)->format('d F Y'),
-                'pph_validation_date'   => \Carbon\Carbon::parse($request->pph_validation_date)->format('d F Y'),
-                'subject'               => "Need Approval for Land Verification Payment No.  ".$request->change_no,
-                'link'                  => 'landverificationpayment',
+                'subject'               => "Need Approval for ".$request->doc_no,
+                'link'                  => 'ploverwrite',
             ];
 
             // dd($dataArray);
 
             $data2Encrypt = [
                 'entity_cd'     => $request->entity_cd,
+                'project_no'    => $request->project_no,
                 'email_address' => $request->email_addr,
                 'level_no'      => $request->level_no,
                 'approve_seq'   => $request->approve_seq,
                 'doc_no'        => $request->doc_no,
                 'entity_name'   => $request->entity_name,
-                'type'          => '1',
-                'type_module'   => 'LM',
-                'text'          => 'Land Verification Payment',
+                'type'          => 'A',
+                'type_module'   => 'PL',
+                'text'          => 'Overwrite Actual Inventory',
             ];
 
             $encryptedData = Crypt::encrypt($data2Encrypt);
@@ -116,7 +85,7 @@ class LandVerificationPaymentController extends Controller
 
             if (!empty($email_address)) {
                 $cacheFile = 'email_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
-                $cacheFilePath = storage_path('app/mail_cache/send_Land_Verification_Payment/' . date('Ymd') . '/' . $cacheFile);
+                $cacheFilePath = storage_path('app/mail_cache/send_Land_PL_Overwrite/' . date('Ymd') . '/' . $cacheFile);
                 $cacheDirectory = dirname($cacheFilePath);
 
                 if (!file_exists($cacheDirectory)) {
@@ -135,14 +104,14 @@ class LandVerificationPaymentController extends Controller
                     Mail::to($email_address)->send(new SendLandMail($encryptedData, $dataArray));
 
                     file_put_contents($cacheFilePath, 'sent');
-                    Log::channel('sendmailapproval')->info("Email Land Verification Payment doc_no $doc_no Entity $entity_cd berhasil dikirim ke: $email_address");
+                    Log::channel('sendmailapproval')->info("Email Overwrite Actual Inventory doc_no $doc_no Entity $entity_cd berhasil dikirim ke: $email_address");
 
                     $callback['Pesan'] = "Email berhasil dikirim ke: $email_address";
                     $callback['Error'] = false;
                     $callback['Status']= 200;
 
                 } else {
-                    Log::channel('sendmailapproval')->info("Email Land Verification Payment doc_no $doc_no Entity $entity_cd sudah pernah dikirim ke: $email_address");
+                    Log::channel('sendmailapproval')->info("Email Overwrite Actual Inventory doc_no $doc_no Entity $entity_cd sudah pernah dikirim ke: $email_address");
 
                     $callback['Pesan'] = "Email sudah pernah dikirim ke: $email_address";
                     $callback['Error'] = false;
@@ -280,7 +249,7 @@ class LandVerificationPaymentController extends Controller
                     "name"      => $name,
                     "bgcolor"   => $bgcolor,
                     "valuebt"   => $valuebt,
-                    "link"      => "landverificationpayment",
+                    "link"      => "landsplitshgb",
                     "entity_name"   => $data["entity_name"],
                 );
                 return view('email/remark/passcheckwithremark', $data);
@@ -322,21 +291,22 @@ class LandVerificationPaymentController extends Controller
             $imagestatus = "reject.png";
         }
         $pdo = DB::connection('BLP')->getPdo();
-        $sth = $pdo->prepare("EXEC mgr.xrl_send_mail_approval_land_verification_payment ?, ?, ?, ?, ?");
+        $sth = $pdo->prepare("EXEC mgr.xrl_send_mail_approval_pl_overwrite ?, ?, ?, ?, ?, ?");
         $success = $sth->execute([
             $data["entity_cd"],
+            $data["project_no"],
             $data["doc_no"],
             $status,
             $data["level_no"],
             $reason
         ]);
         if ($success) {
-            $msg = "You Have Successfully ".$descstatus." the Land Verification Payment No. ".$data["doc_no"];
+            $msg = "You Have Successfully ".$descstatus." the Overwrite Actual Inventory No. ".$data["doc_no"];
             $notif = $descstatus." !";
             $st = 'OK';
             $image = $imagestatus;
         } else {
-            $msg = "You Failed to ".$descstatus." the Land Verification Payment No.".$data["doc_no"];
+            $msg = "You Failed to ".$descstatus." the Overwrite Actual Inventory No.".$data["doc_no"];
             $notif = 'Fail to '.$descstatus.' !';
             $st = 'FAIL';
             $image = "reject.png";

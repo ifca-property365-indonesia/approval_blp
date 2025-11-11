@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Mail\SendLandMail;
 use Exception;
 use Carbon\Carbon;
+use App\Helpers\FormatHelper;
 
 class LandHandoverLegalController extends Controller
 {
@@ -47,11 +48,16 @@ class LandHandoverLegalController extends Controller
                 }
             }
 
-            $list_of_approve = explode('; ', $request->approve_exist);
-            $approve_data = [];
-            foreach ($list_of_approve as $approve) {
-                $approve_data[] = $approve;
+            function strToArray($val) {
+                if (empty($val) || strtoupper($val) === 'EMPTY') return [];
+                if (is_array($val)) return $val;
+                return array_map('trim', explode(';', $val));
             }
+
+            $approve_data       = strToArray($request->approve_exist);
+            $customer_name      = strToArray($request->customer_name);
+            $handover_to        = strToArray($request->handover_to);
+            $remarks            = strToArray($request->remarks);
 
             $dataArray = [
                 'user_id'           => $request->user_id,
@@ -64,6 +70,7 @@ class LandHandoverLegalController extends Controller
                 'sender_addr'       => $request->sender_addr,
                 'sender_name'       => $request->sender_name,
                 'entity_name'       => $request->entity_name,
+                'customer_name'     => $customer_name,
                 'attachments'       => $attachments,
                 'descs'             => $request->descs,
                 'approve_list'      => $approve_data,
@@ -71,15 +78,14 @@ class LandHandoverLegalController extends Controller
                 'shgb_no'           => $request->shgb_no,
                 'nop_no'            => $request->nop_no,
                 'shgb_name'         => $request->shgb_name,
-                'shgb_area'        => number_format($request->shgb_area, 2, '.', ','),
-                'handover_to'       => $request->handover_to,
+                'shgb_area'         => FormatHelper::safeNumber($request->shgb_area),
+                'handover_to'       => $handover_to,
+                'remarks'           => $remarks,
                 'clarify_user'		=> $request->sender_name,
                 'clarify_email'		=> $request->sender_addr,
-                'subject'           => "Need Approval for Land Handover Legal No.  ".$request->doc_no,
+                'subject'           => "Need Approval for Land Handover Legal No. ".$request->doc_no,
                 'link'              => 'landhandoverlegal',
             ];
-
-            // dd($dataArray);
 
             $data2Encrypt = [
                 'entity_cd'     => $request->entity_cd,
@@ -109,39 +115,39 @@ class LandHandoverLegalController extends Controller
             $level_no    = $request->level_no;
 
             if (!empty($email_address)) {
-                $cacheFile = 'email_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
-                $cacheFilePath = storage_path('app/mail_cache/send_Land_Handover_Legal/' . date('Ymd') . '/' . $cacheFile);
-                $cacheDirectory = dirname($cacheFilePath);
+                // $cacheFile = 'email_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
+                // $cacheFilePath = storage_path('app/mail_cache/send_Land_Handover_Legal/' . date('Ymd') . '/' . $cacheFile);
+                // $cacheDirectory = dirname($cacheFilePath);
 
-                if (!file_exists($cacheDirectory)) {
-                    mkdir($cacheDirectory, 0755, true);
-                }
+                // if (!file_exists($cacheDirectory)) {
+                //     mkdir($cacheDirectory, 0755, true);
+                // }
 
-                $lockFile = $cacheFilePath . '.lock';
-                $lockHandle = fopen($lockFile, 'w');
-                if (!flock($lockHandle, LOCK_EX)) {
-                    fclose($lockHandle);
-                    throw new Exception('Failed to acquire lock');
-                }
+                // $lockFile = $cacheFilePath . '.lock';
+                // $lockHandle = fopen($lockFile, 'w');
+                // if (!flock($lockHandle, LOCK_EX)) {
+                //     fclose($lockHandle);
+                //     throw new Exception('Failed to acquire lock');
+                // }
 
-                if (!file_exists($cacheFilePath)) {
+                // if (!file_exists($cacheFilePath)) {
                     // kirim email
                     Mail::to($email_address)->send(new SendLandMail($encryptedData, $dataArray));
 
-                    file_put_contents($cacheFilePath, 'sent');
+                    // file_put_contents($cacheFilePath, 'sent');
                     Log::channel('sendmailapproval')->info("Email Land Handover Legal doc_no $doc_no Entity $entity_cd berhasil dikirim ke: $email_address");
 
                     $callback['Pesan'] = "Email berhasil dikirim ke: $email_address";
                     $callback['Error'] = false;
                     $callback['Status']= 200;
 
-                } else {
-                    Log::channel('sendmailapproval')->info("Email Land Handover Legal doc_no $doc_no Entity $entity_cd sudah pernah dikirim ke: $email_address");
+                // } else {
+                //     Log::channel('sendmailapproval')->info("Email Land Handover Legal doc_no $doc_no Entity $entity_cd sudah pernah dikirim ke: $email_address");
 
-                    $callback['Pesan'] = "Email sudah pernah dikirim ke: $email_address";
-                    $callback['Error'] = false;
-                    $callback['Status']= 201;
-                }
+                //     $callback['Pesan'] = "Email sudah pernah dikirim ke: $email_address";
+                //     $callback['Error'] = false;
+                //     $callback['Status']= 201;
+                // }
             } else {
                 Log::channel('sendmail')->warning("No email address provided for document $doc_no");
 

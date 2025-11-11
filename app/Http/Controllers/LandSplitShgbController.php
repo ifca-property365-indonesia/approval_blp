@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Mail\SendLandMail;
 use Exception;
 use Carbon\Carbon;
+use App\Helpers\FormatHelper;
 
 class LandSplitShgbController extends Controller
 {
@@ -47,71 +48,24 @@ class LandSplitShgbController extends Controller
                 }
             }
 
-            $list_of_approve = explode('; ', $request->approve_exist);
-            $approve_data = [];
-            foreach ($list_of_approve as $approve) {
-                $approve_data[] = $approve;
+            function strToArray($val) {
+                if (empty($val) || strtoupper($val) === 'EMPTY') return [];
+                if (is_array($val)) return $val;
+                return array_map('trim', explode(';', $val));
             }
 
-            $list_of_shgb_no = explode('; ', $request->shgb_no);
-            $shgb_no_data = [];
-            foreach ($list_of_shgb_no as $shgb_no) {
-                $shgb_no_data[] = $shgb_no;
-            }
-
-            $list_of_shgb_no_bpn = explode('; ', $request->shgb_no_bpn);
-            $shgb_no_bpn_data = [];
-            foreach ($list_of_shgb_no_bpn as $shgb_no_bpn) {
-                $shgb_no_bpn_data[] = $shgb_no_bpn;
-            }
-
-            $list_of_nop_no = explode('; ', $request->nop_no);
-            $nop_no_data = [];
-            foreach ($list_of_nop_no as $nop_no) {
-                $nop_no_data[] = $nop_no;
-            }
-
-            $list_of_nib_no = explode('; ', $request->nib_no);
-            $nib_no_data = [];
-            foreach ($list_of_nib_no as $nib_no) {
-                $nib_no_data[] = $nib_no;
-            }
-
-            $list_of_shgb_date = explode('; ', $request->shgb_date);
-            $shgb_date_data = [];
-            foreach ($list_of_shgb_date as $shgb_date) {
-                $shgb_date_data[] = \Carbon\Carbon::parse($shgb_date)->format('d F Y');
-            }
-
-            $list_of_shgb_expired = explode('; ', $request->shgb_expired);
-            $shgb_expired_data = [];
-            foreach ($list_of_shgb_expired as $shgb_expired) {
-                $shgb_expired_data[] = \Carbon\Carbon::parse($shgb_expired)->format('d F Y');
-            }
-
-            $list_of_shgb_area = explode('; ', $request->shgb_area);
-            $shgb_area_data = [];
-            foreach ($list_of_shgb_area as $shgb_area) {
-                $shgb_area_data[] = number_format((float)$shgb_area, 2, '.', ',');
-            }
-
-            $list_of_split_status_hd = explode(';', $request->split_status_hd);
-            $split_status_hd_data = [];
-            foreach ($list_of_split_status_hd as $split_status_hd) {
-                $split_status_hd_data[] = $split_status_hd;
-            }
-            
-            $list_of_split_status_hdstr = explode(';', $request->split_status_hdstr);
-            $split_status_hdstr_data = [];
-            foreach ($list_of_split_status_hdstr as $split_status_hdstr) {
-                $split_status_hdstr_data[] = $split_status_hdstr;
-            }
-            
-            $list_of_split_status_dtstr = explode(';', $request->split_status_dtstr);
-            $split_status_dtstr_data = [];
-            foreach ($list_of_split_status_dtstr as $split_status_dtstr) {
-                $split_status_hd_data[] = $split_status_dtstr;
-            }
+            // 🔹 Konversi field jadi array agar Blade bisa loop tanpa error
+            $shgb_no_data          = strToArray($request->shgb_no);
+            $shgb_no_bpn_data      = strToArray($request->shgb_no_bpn);
+            $nop_no_data           = strToArray($request->nop_no);
+            $nib_no_data           = strToArray($request->nib_no);
+            $shgb_date_data        = array_map(fn($d) => FormatHelper::safeDateFormat($d), strToArray($request->shgb_date));
+            $shgb_expired_data     = array_map(fn($d) => FormatHelper::safeDateFormat($d), strToArray($request->shgb_expired));
+            $shgb_area_data        = array_map(fn($d) => FormatHelper::safeNumber($d), strToArray($request->shgb_area));
+            $split_status_hd_data  = strToArray($request->split_status_hd);
+            $split_status_hdstr_data = strToArray($request->split_status_hdstr);
+            $split_status_dtstr_data = strToArray($request->split_status_dtstr);
+            $approve_data          = strToArray($request->approve_exist);
 
             $dataArray = [
                 'user_id'               => $request->user_id,
@@ -134,24 +88,22 @@ class LandSplitShgbController extends Controller
                 'shgb_date'             => $shgb_date_data,
                 'shgb_expired'          => $shgb_expired_data,
                 'shgb_area'             => $shgb_area_data,
-                'shgb_no_split'         => $request->shgb_no_split,
-                'shgb_no_bpn_split'     => $request->shgb_no_bpn_split,
-                'nop_no_split'          => $request->nop_no_split,
-                'nib_no_split'          => $request->nib_no_split,
-                'shgb_date_split'       => \Carbon\Carbon::parse($request->shgb_date_split)->format('d F Y'),
-                'shgb_expired_split'    => \Carbon\Carbon::parse($request->shgb_expired_split)->format('d F Y'),
-                'shgb_area_split'       => number_format((float)$request->shgb_area_split, 2, '.', ','),
-                'remaining_area'        => number_format((float)$request->remaining_area, 2, '.', ','),
+                'shgb_no_split'         => $request->shgb_no_split ?? '',
+                'shgb_no_bpn_split'     => $request->shgb_no_bpn_split ?? '',
+                'nop_no_split'          => $request->nop_no_split ?? '',
+                'nib_no_split'          => $request->nib_no_split ?? '',
+                'shgb_date_split'       => FormatHelper::safeDateFormat($request->shgb_date_split),
+                'shgb_expired_split'    => FormatHelper::safeDateFormat($request->shgb_expired_split),
+                'shgb_area_split'       => FormatHelper::safeNumber($request->shgb_area_split),
+                'remaining_area'        => FormatHelper::safeNumber($request->remaining_area),
                 'split_status_hd'       => $split_status_hd_data,
                 'split_status_hdstr'    => $split_status_hdstr_data,
                 'split_status_dtstr'    => $split_status_dtstr_data,
-                'clarify_user'		    => $request->clarify_user,
-                'clarify_email'		    => $request->clarify_email,
-                'subject'               => "Need Approval for ".$request->doc_no,
+                'clarify_user'          => $request->sender_name,
+                'clarify_email'         => $request->sender_addr,
+                'subject'               => "Need Approval for Split SHGB No. " . $request->doc_no,
                 'link'                  => 'landsplitshgb',
             ];
-
-            // dd($dataArray);
 
             $data2Encrypt = [
                 'entity_cd'     => $request->entity_cd,

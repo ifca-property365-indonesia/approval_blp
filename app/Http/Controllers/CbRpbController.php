@@ -9,22 +9,20 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use App\Mail\SendCbFupdMail;
+use App\Mail\SendCbRpbMail;
 
-class CbFupdController extends Controller
+class CbRpbController extends Controller
 {
-    public function processModule($data) 
+    public function processModule($data)
     {
-        if (strpos($data["band_hd_descs"], "\n") !== false) {
-            $band_hd_descs = str_replace("\n", ' (', $data["band_hd_descs"]) . ')';
+        if (strpos($data["rpb_descs"], "\n") !== false) {
+            $rpb_descs = str_replace("\n", ' (', $data["rpb_descs"]) . ')';
         } else {
-            $band_hd_descs = $data["band_hd_descs"];
+            $rpb_descs = $data["rpb_descs"];
         }
 
-        $dt_amount = number_format($data["dt_amount"], 2, '.', ',');
-
-        $list_of_urls = explode('; ', $data["url_file"]);
-        $list_of_files = explode('; ', $data["file_name"]);
+        $list_of_urls = explode(',', $data["url_file"]);
+        $list_of_files = explode(',', $data["file_name"]);
 
         $url_data = [];
         $file_data = [];
@@ -43,23 +41,27 @@ class CbFupdController extends Controller
             $approve_data[] = $approve;
         }
 
+        $trx_amt = number_format($data["trx_amt"], 2, '.', ',');
+
         $dataArray = array(
-            'module'        => "CbFupd",
-            'sender'        => $data["sender"],
-            'sender_addr'   => $data["sender_addr"],
-            'entity_name'   => $data["entity_name"],
-            'band_hd_descs' => $band_hd_descs,
-            'band_hd_no'    => $data["band_hd_no"],
-            'dt_amount'     => $dt_amount,
+            'module'        => 'CbRpb',
+            'sender'        => $data['sender'],
             'url_file'      => $url_data,
             'file_name'     => $file_data,
-            'user_name'     => $data["user_name"],
-            'reason'        => $data["reason"],
+            'entity_name'   => $data['entity_name'],
+            'email_address' => $data['email_addr'],
+            'user_name'     => $data['user_name'],
+            'reason'        => $data['reason'],
+            'rpb_descs'     => $rpb_descs,
             'approve_list'  => $approve_data,
             'clarify_user'  => $data['clarify_user'],
             'clarify_email' => $data['clarify_email'],
-            'body'          => "Please approve Propose Transfer to Bank No. ".$data['band_hd_no']." for ".$band_hd_descs,
-            'subject'       => "Need Approval for Propose Transfer to Bank No. ".$data['band_hd_no'],
+            'currency_cd'   => $data['currency_cd'],
+            'trx_amt'       => $trx_amt,
+            'sender_addr'   => $data['sender_addr'],
+            'hd_doc_no'     => $data['hd_doc_no'],
+            'body'          => "Please approve Recapitulation Bank No. ".$data['doc_no']." for ".$rpb_descs,
+            'subject'       => "Need Approval for Recapitulation Bank No.  ".$data['doc_no'],
         );
 
         $data2Encrypt = array(
@@ -72,32 +74,31 @@ class CbFupdController extends Controller
             'usergroup'     => $data["usergroup"],
             'user_id'       => $data["user_id"],
             'supervisor'    => $data["supervisor"],
-            'type'          => 'E',
+            'type'          => 'D',
             'type_module'   => 'CB',
-            'text'          => 'Propose Transfer to Bank'
+            'text'          => 'Recapitulation Bank'
         );
-
-        // var_dump($data2Encrypt);
 
         // Melakukan enkripsi pada $dataArray
         $encryptedData = Crypt::encrypt($data2Encrypt);
-    
+
         try {
             $emailAddresses = strtolower($data["email_addr"]);
             $approve_seq = $data["approve_seq"];
             $entity_cd = $data["entity_cd"];
             $doc_no = $data["doc_no"];
             $level_no = $data["level_no"];
-        
+            $entity_name = $data["entity_name"];
+
             // Check if email addresses are provided and not empty
             if (!empty($emailAddresses)) {
                 $email = $emailAddresses; // Since $emailAddresses is always a single email address (string)
-                
+
                 // Check if the email has been sent before for this document
                 $cacheFile = 'email_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
-                $cacheFilePath = storage_path('app/mail_cache/send_cbfupd/' . date('Ymd') . '/' . $cacheFile);
+                $cacheFilePath = storage_path('app/mail_cache/send_cbrpb/' . date('Ymd') . '/' . $cacheFile);
                 $cacheDirectory = dirname($cacheFilePath);
-        
+
                 // Ensure the directory exists
                 if (!file_exists($cacheDirectory)) {
                     mkdir($cacheDirectory, 0755, true);
@@ -111,20 +112,24 @@ class CbFupdController extends Controller
                     fclose($lockHandle);
                     throw new Exception('Failed to acquire lock');
                 }
-        
+
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($email)->send(new SendCbFupdMail($encryptedData, $dataArray));
-        
+                    $mail = Mail::to($email);
+
+                    // Tambahkan BCC
+                    $mail->send(new SendCbRpbMail($encryptedData, $dataArray, 'IFCA SOFTWARE - ' . $entity_name));
+
+
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
-        
+
                     // Log the success
-                    Log::channel('sendmailapproval')->info('Email CB FUPD doc_no '.$doc_no.' Entity ' . $entity_cd.' berhasil dikirim ke: ' . $email);
+                    Log::channel('sendmailapproval')->info('Email CB RPB doc_no '.$doc_no.' Entity ' . $entity_cd.' berhasil dikirim ke: ' . $email);
                     return 'Email berhasil dikirim ke: ' . $email;
                 } else {
                     // Email was already sent
-                    Log::channel('sendmailapproval')->info('Email CB FUPD doc_no '.$doc_no.' Entity ' . $entity_cd.' already sent to: ' . $email);
+                    Log::channel('sendmailapproval')->info('Email CB RPB doc_no '.$doc_no.' Entity ' . $entity_cd.' already sent to: ' . $email);
                     return 'Email has already been sent to: ' . $email;
                 }
             } else {
@@ -140,9 +145,6 @@ class CbFupdController extends Controller
 
     public function update($status, $encrypt, $reason)
     {
-        Artisan::call('config:cache');
-        Artisan::call('cache:clear');
-        Cache::flush();
         $data = Crypt::decrypt($encrypt);
 
         $descstatus = " ";
@@ -164,8 +166,8 @@ class CbFupdController extends Controller
             $descstatus = "Cancelled";
             $imagestatus = "reject.png";
         }
-        $pdo = DB::connection('BTID')->getPdo();
-        $sth = $pdo->prepare("SET NOCOUNT ON; EXEC mgr.x_send_mail_approval_cb_fupd ?, ?, ?, ?, ?, ?, ?, ?, ?, ?;");
+        $pdo = DB::connection('BLP')->getPdo();
+        $sth = $pdo->prepare("SET NOCOUNT ON; EXEC mgr.x_send_mail_approval_cb_rpb ?, ?, ?, ?, ?, ?, ?, ?, ?, ?;");
         $sth->bindParam(1, $data["entity_cd"]);
         $sth->bindParam(2, $data["project_no"]);
         $sth->bindParam(3, $data["doc_no"]);
@@ -178,12 +180,12 @@ class CbFupdController extends Controller
         $sth->bindParam(10, $reason);
         $sth->execute();
         if ($sth == true) {
-            $msg = "You Have Successfully ".$descstatus." the Propose Transfer to Bank No. ".$data["doc_no"];
+            $msg = "You Have Successfully ".$descstatus." the Recapitulation Bank No. ".$data["doc_no"];
             $notif = $descstatus." !";
             $st = 'OK';
             $image = $imagestatus;
         } else {
-            $msg = "You Failed to ".$descstatus." the Propose Transfer to Bank No.".$data["doc_no"];
+            $msg = "You Failed to ".$descstatus." the Recapitulation Bank No.".$data["doc_no"];
             $notif = 'Fail to '.$descstatus.' !';
             $st = 'OK';
             $image = "reject.png";
@@ -195,7 +197,5 @@ class CbFupdController extends Controller
             "image" => $image
         );
         return view("email.after", $msg1);
-        Artisan::call('config:cache');
-        Artisan::call('cache:clear');
     }
 }

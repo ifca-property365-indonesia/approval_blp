@@ -69,81 +69,13 @@
           <tr>
             <td class="content" style="background-color:#e0e0e0; padding:30px; color:#000000; font-size:14px; line-height:22px;">
               <h5 style="font-size:20px; font-weight:400; margin:0 0 15px;">Dear {{ $dataArray['user_name'] }},</h5>
-              <p style="margin:0 0 15px;">Tolong berikan persetujuan untuk proses Verifikasi Pembayaran {{ $dataArray['verification_no'] }} dengan detail:</p>
+              <p style="margin:0 0 15px;">Below is a Overwrite Actual Inventory that requires your approval :</p>
 
               <!-- Detail Table -->
               <table role="presentation" cellpadding="4" cellspacing="0" border="0" width="100%" style="font-size:14px; color:#000000;">
-                <tr>
-                  <td width="60%">Nomor Dokumen</td>
-                  <td width="2%" style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['verification_no'] }}</td>
-                </tr>
-                <tr>
-                  <td>No. Alas Hak</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['land_title_no'] }}</td>
-                </tr>
-                <tr>
-                  <td>Luas Alas Hak</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['land_title_area'] }}</td>
-                </tr>
-                <tr>
-                  <td>No. Buku</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['book_no'] }}</td>
-                </tr>
-                <tr>
-                  <td>No. Form Berkas Masuk</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['incoming_form_no'] }}</td>
-                </tr>
-                <tr>
-                  <td>Nominal SPH (Rp./m2)</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['sph_amt_m2'] }}</td>
-                </tr>
-                <tr>
-                  <td>Nominal PPh</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['pph_amt'] }}</td>
-                </tr>
-                <tr>
-                  <td>Nominal BPHTB</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['bphtb_amt'] }}</td>
-                </tr>
-                <tr>
-                  <td>No. Form Pengajuan PPh & BPHTB</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['submission_tax_no'] }}</td>
-                </tr>
-                <tr>
-                  <td>Tanggal Bayar PPh & BPHTB</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['pph_payment_date'] }}</td>
-                </tr>
-                <tr>
-                  <td>Tanggal Pendaftaran Validasi PPh & BPHTB</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['pph_reg_date'] }}</td>
-                </tr>
-                <tr>
-                  <td>Tanggal Validasi PPh & BPHTB</td>
-                  <td style="padding: 0 10px;">:</td>
-                  <td>{{ $dataArray['pph_validation_date'] }}</td>
-                </tr>
+                <tr><td width="40%">Lot No.</td><td width="2%">:</td><td>{{ $dataArray['doc_no'] }}</td></tr>
+                <tr><td>Amount</td><td>:</td><td align="right">Rp. {{ $dataArray['amount'] }}</td></tr>
               </table>
-
-              <!-- Attachments -->
-              @if (!empty($dataArray['attachments']) && count($dataArray['attachments']) > 0)
-                  <p style="margin:20px 0 10px;">To view detail transaction, please click the link below:</p>
-                  @foreach($dataArray['attachments'] as $attachment)
-                      <a href="{{ $attachment['url'] }}" target="_blank" style="color:#026735; text-decoration:none;">
-                          {{ $attachment['file_name'] }}
-                      </a><br>
-                  @endforeach
-              @endif
 
               <!-- Buttons -->
               <div style="text-align: center; margin: 20px 0;">
