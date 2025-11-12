@@ -76,7 +76,7 @@
                 <tr>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">No. SHGB</th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Nama</th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Luas SHGB</th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Luas SHGB (m²)</th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Diserahkan pada</th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Nama Customer</th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Tanggal Serah Terima</th>
