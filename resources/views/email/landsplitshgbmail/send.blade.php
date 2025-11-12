@@ -80,7 +80,7 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">No. NIB</th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Tanggal Terbit</th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Tanggal Expired</th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Luas Awal SHGB (M&sup2;)</th>max-width
+                  <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Luas Awal SHGB (M&sup2;)</th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Luas Akhir SHGB (M&sup2;)</th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Induk / Pecahan</th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 8px;">Keterangan</th>
