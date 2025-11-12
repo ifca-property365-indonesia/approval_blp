@@ -78,7 +78,7 @@ class LandHandoverLegalController extends Controller
                 'shgb_no'           => $request->shgb_no,
                 'nop_no'            => $request->nop_no,
                 'shgb_name'         => $request->shgb_name,
-                'shgb_area'         => FormatHelper::safeNumber($request->shgb_area),
+                'shgb_area'         => number_format((float) $request->shgb_area, 0, '.', ','),
                 'handover_to'       => $handover_to,
                 'remarks'           => $remarks,
                 'clarify_user'		=> $request->sender_name,
