@@ -75,7 +75,6 @@
               <table role="presentation" cellpadding="4" cellspacing="0" border="0" width="100%" style="font-size:14px; color:#000000;">
                 <tr><td width="40%">Nomor Dokumen</td><td width="2%">:</td><td>{{ $dataArray['doc_no'] }}</td></tr>
                 <tr><td>Nomor SHGB (Merge) </td><td>:</td><td>{{ $dataArray['merge_ref_no'] }}</td></tr>
-                <tr><td>NOP SHGB (Merge)</td><td>:</td><td>{{ $dataArray['merge_nop'] }}</td></tr>
                 <tr><td>Luas SHGB (Merge)</td><td>:</td><td>{{ $dataArray['merge_area'] }}</td></tr>
                 <tr><td>Tanggal Penggabungan SHGB</td><td>:</td><td>{{ $dataArray['transaction_date'] }}</td></tr>
                 @if(isset($dataArray['shgb_ref_no']) && is_array($dataArray['shgb_ref_no']) && count($dataArray['shgb_ref_no']) > 0)
