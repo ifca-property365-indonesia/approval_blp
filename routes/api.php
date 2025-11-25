@@ -186,3 +186,8 @@ use App\Http\Controllers\LandRequestController as LandRequest;
 Route::POST('/landrequest', [LandRequest::class, 'index']);
 Route::GET('/landrequest/{status}/{encrypt}', [LandRequest::class, 'processData']);
 Route::POST('/landrequest/getaccess', [LandRequest::class, 'getaccess']);
+
+use App\Http\Controllers\LandCheckingCertificateController as LandCheckingCertificate;
+Route::POST('/landcheckingcertificate', [LandCheckingCertificate::class, 'index']);
+Route::GET('/landcheckingcertificate/{status}/{encrypt}', [LandCheckingCertificate::class, 'processData']);
+Route::POST('/landcheckingcertificate/getaccess', [LandCheckingCertificate::class, 'getaccess']);
