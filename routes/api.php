@@ -176,3 +176,13 @@ use App\Http\Controllers\PlOverwriteController as PlOverwrite;
 Route::POST('/ploverwrite', [PlOverwrite::class, 'index']);
 Route::GET('/ploverwrite/{status}/{encrypt}', [PlOverwrite::class, 'processData']);
 Route::POST('/ploverwrite/getaccess', [PlOverwrite::class, 'getaccess']);
+
+use App\Http\Controllers\PLBudgetRevisionController as PLBudgetRevision;
+Route::POST('/budgetrevision', [PLBudgetRevision::class, 'Mail']);
+Route::GET('/budgetrevision/{status}/{encrypt}', [PLBudgetRevision::class, 'processData']);
+Route::POST('/budgetrevision/getaccess', [PLBudgetRevision::class, 'update']);
+
+use App\Http\Controllers\LandRequestController as LandRequest;
+Route::POST('/landrequest', [LandRequest::class, 'index']);
+Route::GET('/landrequest/{status}/{encrypt}', [LandRequest::class, 'processData']);
+Route::POST('/landrequest/getaccess', [LandRequest::class, 'getaccess']);
