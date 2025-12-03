@@ -48,6 +48,36 @@ Route::POST('/feedback_cb_fupd', [StaffFeedback::class, 'feedback_cb_fupd']);
 Route::POST('/feedback_cb', [StaffFeedback::class, 'feedback_cb']);
 Route::POST('/feedback_cm_progress', [StaffFeedback::class, 'feedback_cm_progress']);
 
+use App\Http\Controllers\CmDoneController as CmDone;
+Route::POST('/cmdone', [CmDone::class, 'Mail']);
+Route::GET('/cmdone/{status}/{encrypt}', [CmDone::class, 'processData']);
+Route::POST('/cmdone/getaccess', [CmDone::class, 'update']);
+
+use App\Http\Controllers\CmProgressController as CmProgress;
+Route::POST('/cmprogress', [CmProgress::class, 'Mail']);
+Route::GET('/cmprogress/{status}/{encrypt}', [CmProgress::class, 'processData']);
+Route::POST('/cmprogress/getaccess', [CmProgress::class, 'update']);
+
+use App\Http\Controllers\CmEntryController as CmEntry;
+Route::POST('/cmentry', [CmEntry::class, 'Mail']);
+Route::GET('/cmentry/{status}/{encrypt}', [CmEntry::class, 'processData']);
+Route::POST('/cmentry/getaccess', [CmEntry::class, 'update']);
+
+use App\Http\Controllers\CmCloseController as CmClose;
+Route::POST('/cmclose', [CmClose::class, 'Mail']);
+Route::GET('/cmclose/{status}/{encrypt}', [CmClose::class, 'processData']);
+Route::POST('/cmclose/getaccess', [CmClose::class, 'update']);
+
+use App\Http\Controllers\VarianOrderController as VarianOrder;
+Route::POST('/varianorder', [VarianOrder::class, 'Mail']);
+Route::GET('/varianorder/{status}/{encrypt}', [VarianOrder::class, 'processData']);
+Route::POST('/varianorder/getaccess', [VarianOrder::class, 'update']);
+
+use App\Http\Controllers\ContractRenewController as ContractRenew;
+Route::POST('/contractrenew', [ContractRenew::class, 'Mail']);
+Route::GET('/contractrenew/{status}/{encrypt}', [ContractRenew::class, 'processData']);
+Route::POST('/contractrenew/getaccess', [ContractRenew::class, 'update']);
+
 use App\Http\Controllers\SelController as Select;
 Route::get('/select', [Select::class, 'index']);
 
