@@ -29,7 +29,17 @@ class SendCbFupdMail extends Mailable
     {
         $this->encryptedData = $encryptedData;
         $this->dataArray = $dataArray;
-        $this->fromName = $fromName ?? config('mail.from.name');  // Fallback to .env if not provided
+
+        // Ambil default dari .env
+        $defaultFromName = config('mail.from.name');  // "IFCA SOFTWARE"
+
+        // Ambil entity_name dari dataArray
+        $entityName = $dataArray['entity_name'] ?? null;
+
+        // Tentukan final
+        $this->fromName = $entityName
+            ? $defaultFromName . ' - ' . $entityName
+            : $defaultFromName;
     }
 
     /**

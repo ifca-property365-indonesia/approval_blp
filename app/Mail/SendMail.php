@@ -27,6 +27,16 @@ class SendMail extends Mailable
     {
         $this->encryptedData = $encryptedData;
         $this->dataArray = $dataArray;
+        // Ambil default dari .env
+        $defaultFromName = config('mail.from.name');  // "IFCA SOFTWARE"
+
+        // Ambil entity_name dari dataArray
+        $entityName = $dataArray['entity_name'] ?? null;
+
+        // Tentukan final
+        $this->fromName = $entityName
+            ? $defaultFromName . ' - ' . $entityName
+            : $defaultFromName;
     }
 
     /**
@@ -37,7 +47,8 @@ class SendMail extends Mailable
     public function build()
     {
 
-        return $this->subject($this->dataArray['subject'])
+        return $this->from(config('mail.from.address'), $this->fromName)
+                    ->subject($this->dataArray['subject'])
                     ->view('email.send')
                     ->with([
                         'encryptedData' => $this->encryptedData,
