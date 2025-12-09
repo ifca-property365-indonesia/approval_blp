@@ -75,7 +75,7 @@
                                     <p style="text-align:left; margin-bottom: 15px; margin-top: 0; color: #000000; font-size: 16px; list-style-type: circle;">
                                         <b>{{ $dataArray['ppu_descs'] }}</b><br>
                                         Pay To: {{ $dataArray['pay_to'] }}<br>
-                                        With a total estimated amount of {{ $dataArray['forex'] }} {{ $dataArray['ppu_amt'] }}<br>
+                                        With a total amount of {{ $dataArray['forex'] }} {{ $dataArray['ppu_amt'] }}<br>
                                         Request no : {{ $dataArray['ppu_no'] }}<br>
                                     </p>
 
