@@ -138,7 +138,7 @@ class ApprListControllers extends Controller
                     "dir" => "send_cbrum/$date",
                     "proc" => "mgr.x_send_mail_approval_cb_rum",
                     "params" => [$entity_cd, $project_no, $doc_no, $trx_type, $statussend, $downLevel, $user_group, $user_id, $spv, $reason]
-                ], 
+                ]
             ],
 
             // ========== CM ==========
@@ -168,8 +168,11 @@ class ApprListControllers extends Controller
                     "proc" => "mgr.xrl_send_mail_approval_cm_progress_with_unit",
                     "params" => [$entity_cd, $project_no, $doc_no, $ref_no, $statussend, $downLevel, $user_group, $user_id, $spv, $reason]
                 ],
-                
-                
+                'D' => [
+                    "dir" => "send_varianorder/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_cm_varianorder",
+                    "params" => [$entity_cd, $project_no, $doc_no, $ref_no, $statussend, $downLevel, $user_group, $user_id, $spv, $reason]
+                ]
             ],
 
             // ========== TM ==========
@@ -213,19 +216,123 @@ class ApprListControllers extends Controller
                     "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
                 ],
                 '1' => [
-                    "dir" => "send_Land_Change/$date",
-                    "proc" => "mgr.xrl_send_mail_approval_land_change_name",
-                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
-                ],
-                '1' => [
                     "dir" => "send_Land_Change_Name/$date",
                     "proc" => "mgr.xrl_send_mail_approval_land_change_name",
                     "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'U' => [
+                    "dir" => "send_Land_Extension_SHGB/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_extension_shgb",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'F' => [
+                    "dir" => "send_Land_Fph/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_fph",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'M' => [
+                    "dir" => "send_Land_Handover_Legal/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_handover_legal",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'H' => [
+                    "dir" => "send_Land_Handover_SHGB/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_handover_shgb",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'B' => [
+                    "dir" => "send_Land_Map/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_map",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'K' => [
+                    "dir" => "send_Land_Measuring/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_measuring",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'A' => [
+                    "dir" => "send_Land_Measuring_SFT/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_measuring_sft",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'J' => [
+                    "dir" => "send_Land_Merge_SHGB/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_sft_merge_shgb",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'R' => [
+                    "dir" => "send_Land_Request/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_request",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'Y' => [
+                    "dir" => "send_Land_SFT_BPHTB/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_sft_bphtb",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'X' => [
+                    "dir" => "send_Land_SFT_Propose/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_sft_propose",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'Z' => [
+                    "dir" => "send_Land_SFT_SHGB/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_sft_shgb",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'S' => [
+                    "dir" => "send_Land_SPH/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_sph",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'Q' => [
+                    "dir" => "send_Land_Split_SHGB/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_split_shgb",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'E' => [
+                    "dir" => "send_Land_Submission/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_submission",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                'V' => [
+                    "dir" => "send_Land_Verification/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_Verification",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ],
+                '2' => [
+                    "dir" => "send_Land_Verification_Payment/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_land_verification_payment",
+                    "params" => [$entity_cd, $doc_no, $statussend, $downLevel, $reason]
+                ]
+            ],
+
+            // ========== PL ==========
+            'PL' => [
+                'X' => [
+                    "dir" => "send_pl_budget_lyman/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_pl_budget_lyman",
+                    "params" => [$entity_cd, $project_no, $doc_no, $statussend, $downLevel, $user_id]
+                ],
+                'Y' => [
+                    "dir" => "send_pl_budget_revision/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_pl_budget_revision",
+                    "params" => [$entity_cd, $project_no, $doc_no, $trx_type, $statussend, $downLevel, $user_id]
+                ],
+                'A' => [
+                    "dir" => "send_Land_PL_Overwrite/$date",
+                    "proc" => "mgr.xrl_send_mail_approval_pl_overwrite",
+                    "params" => [$entity_cd, $project_no, $doc_no, $statussend, $downLevel, $reason]
                 ]
             ],
 
             // ========== PO ==========
             'PO' => [
+                'A' => [
+                    "dir" => "send_porder/$date",
+                    "proc" => "mgr.x_send_mail_approval_po_order",
+                    "params" => [$entity_cd, $project_no, $doc_no, $trx_type, $statussend, $downLevel, $user_group, $user_id, $spv, $reason]
+                ],
                 'Q' => [
                     "dir" => "send_porequeset/$date",
                     "proc" => "mgr.x_send_mail_approval_po_request",
@@ -235,11 +342,6 @@ class ApprListControllers extends Controller
                     "dir" => "send_pos/$date",
                     "proc" => "mgr.x_send_mail_approval_po_selection",
                     "params" => [$entity_cd, $project_no, $doc_no, $ref_no, $trx_date, $statussend, $downLevel, $user_group, $user_id, $spv, $reason]
-                ],
-                'A' => [
-                    "dir" => "send_porder/$date",
-                    "proc" => "mgr.x_send_mail_approval_po_order",
-                    "params" => [$entity_cd, $project_no, $doc_no, $trx_type, $statussend, $downLevel, $user_group, $user_id, $spv, $reason]
                 ]
             ]
         ];

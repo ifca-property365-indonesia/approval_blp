@@ -115,22 +115,22 @@ class LandHandoverLegalController extends Controller
             $level_no    = $request->level_no;
 
             if (!empty($email_address)) {
-                // $cacheFile = 'email_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
-                // $cacheFilePath = storage_path('app/mail_cache/send_Land_Handover_Legal/' . date('Ymd') . '/' . $cacheFile);
-                // $cacheDirectory = dirname($cacheFilePath);
+                $cacheFile = 'email_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
+                $cacheFilePath = storage_path('app/mail_cache/send_Land_Handover_Legal/' . date('Ymd') . '/' . $cacheFile);
+                $cacheDirectory = dirname($cacheFilePath);
 
-                // if (!file_exists($cacheDirectory)) {
-                //     mkdir($cacheDirectory, 0755, true);
-                // }
+                if (!file_exists($cacheDirectory)) {
+                    mkdir($cacheDirectory, 0755, true);
+                }
 
-                // $lockFile = $cacheFilePath . '.lock';
-                // $lockHandle = fopen($lockFile, 'w');
-                // if (!flock($lockHandle, LOCK_EX)) {
-                //     fclose($lockHandle);
-                //     throw new Exception('Failed to acquire lock');
-                // }
+                $lockFile = $cacheFilePath . '.lock';
+                $lockHandle = fopen($lockFile, 'w');
+                if (!flock($lockHandle, LOCK_EX)) {
+                    fclose($lockHandle);
+                    throw new Exception('Failed to acquire lock');
+                }
 
-                // if (!file_exists($cacheFilePath)) {
+                if (!file_exists($cacheFilePath)) {
                     // kirim email
                     Mail::to($email_address)->send(new SendLandMail($encryptedData, $dataArray));
 
@@ -141,13 +141,13 @@ class LandHandoverLegalController extends Controller
                     $callback['Error'] = false;
                     $callback['Status']= 200;
 
-                // } else {
-                //     Log::channel('sendmailapproval')->info("Email Land Handover Legal doc_no $doc_no Entity $entity_cd sudah pernah dikirim ke: $email_address");
+                } else {
+                    Log::channel('sendmailapproval')->info("Email Land Handover Legal doc_no $doc_no Entity $entity_cd sudah pernah dikirim ke: $email_address");
 
-                //     $callback['Pesan'] = "Email sudah pernah dikirim ke: $email_address";
-                //     $callback['Error'] = false;
-                //     $callback['Status']= 201;
-                // }
+                    $callback['Pesan'] = "Email sudah pernah dikirim ke: $email_address";
+                    $callback['Error'] = false;
+                    $callback['Status']= 201;
+                }
             } else {
                 Log::channel('sendmail')->warning("No email address provided for document $doc_no");
 
