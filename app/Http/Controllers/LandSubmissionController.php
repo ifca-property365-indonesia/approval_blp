@@ -123,7 +123,7 @@ class LandSubmissionController extends Controller
             if (!empty($emailAddress)) {
                 // Check if the email has been sent before for this document
                 $cacheFile = 'email_sent_' . $approved_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
-                $cacheFilePath = storage_path('app/mail_cache/send_lm_submission/' . date('Ymd') . '/' . $cacheFile);
+                $cacheFilePath = storage_path('app/mail_cache/send_Land_Submission/' . date('Ymd') . '/' . $cacheFile);
                 $cacheDirectory = dirname($cacheFilePath);
 
                 // Ensure the directory exists
