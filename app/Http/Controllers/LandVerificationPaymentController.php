@@ -94,7 +94,7 @@ class LandVerificationPaymentController extends Controller
                 'approve_seq'   => $request->approve_seq,
                 'doc_no'        => $request->doc_no,
                 'entity_name'   => $request->entity_name,
-                'type'          => '1',
+                'type'          => '2',
                 'type_module'   => 'LM',
                 'text'          => 'Land Verification Payment',
             ];
