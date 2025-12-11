@@ -19,29 +19,29 @@ class ApprListControllers extends Controller
     public function getData()
     {
         // 1. Subquery utama yang berisi ROW_NUMBER()
-$sub = DB::connection('BLP')
-    ->table('mgr.cb_cash_request_appr')
-    ->select(
-        '*',
-        DB::raw("
-            ROW_NUMBER() OVER (
-                PARTITION BY doc_no, entity_cd, approve_seq
-                ORDER BY level_no ASC
-            ) AS rn
-        ")
-    )
-    ->where('status', 'P')
-    ->whereNotNull('currency_cd')
-    ->whereRaw("LTRIM(RTRIM(entity_cd)) NOT LIKE '%[^0-9]%'");
+        $sub = DB::connection('BLP')
+            ->table('mgr.cb_cash_request_appr')
+            ->select(
+                '*',
+                DB::raw("
+                    ROW_NUMBER() OVER (
+                        PARTITION BY doc_no, entity_cd, approve_seq
+                        ORDER BY level_no ASC
+                    ) AS rn
+                ")
+            )
+            ->where('status', 'P')
+            ->whereNotNull('currency_cd')
+            ->whereRaw("LTRIM(RTRIM(entity_cd)) NOT LIKE '%[^0-9]%'");
 
 
-// 2. Bungkus subquery agar bisa memakai WHERE rn = 1
-$result = DB::connection('BLP')
-    ->table(DB::raw("({$sub->toSql()}) AS cte"))
-    ->mergeBindings($sub)
-    ->where('rn', 1)
-    ->orderBy('doc_no', 'desc')
-    ->get();
+        // 2. Bungkus subquery agar bisa memakai WHERE rn = 1
+        $result = DB::connection('BLP')
+            ->table(DB::raw("({$sub->toSql()}) AS cte"))
+            ->mergeBindings($sub)
+            ->where('rn', 1)
+            ->orderBy('doc_no', 'desc')
+            ->get();
 
         return DataTables::of($result)->make(true);
     }
