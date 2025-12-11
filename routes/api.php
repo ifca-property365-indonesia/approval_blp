@@ -58,6 +58,11 @@ Route::POST('/cmprogress', [CmProgress::class, 'Mail']);
 Route::GET('/cmprogress/{status}/{encrypt}', [CmProgress::class, 'processData']);
 Route::POST('/cmprogress/getaccess', [CmProgress::class, 'update']);
 
+use App\Http\Controllers\CmProgresswuController as CmProgresswu;
+Route::POST('/cmprogresswu', [CmProgresswu::class, 'Mail']);
+Route::GET('/cmprogresswu/{status}/{encrypt}', [CmProgresswu::class, 'processData']);
+Route::POST('/cmprogresswu/getaccess', [CmProgresswu::class, 'update']);
+
 use App\Http\Controllers\CmEntryController as CmEntry;
 Route::POST('/cmentry', [CmEntry::class, 'Mail']);
 Route::GET('/cmentry/{status}/{encrypt}', [CmEntry::class, 'processData']);
