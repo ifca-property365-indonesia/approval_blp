@@ -40,6 +40,7 @@
                                     <p style="text-align:left; margin-bottom: 15px; margin-top: 0; color: #000000; font-size: 16px; list-style-type: circle;">
                                         <b>{{ $dataArray['band_hd_descs'] }}</b><br>
                                         With a total amount of IDR {{ $dataArray['dt_amount'] }}<br>
+                                        and Bank Charges of IDR {{ $dataArray['comm_amt'] }}<br>
                                         Doc No.: {{ $dataArray['band_hd_no'] }}<br>
                                     </p>
 

@@ -23,6 +23,8 @@ class CbFupdController extends Controller
 
         $dt_amount = number_format($data["dt_amount"], 2, '.', ',');
 
+        $comm_amt = number_format($data["comm_amt"], 2, '.', ',');
+
         $list_of_urls = explode('; ', $data["url_file"]);
         $list_of_files = explode('; ', $data["file_name"]);
 
@@ -51,6 +53,7 @@ class CbFupdController extends Controller
             'band_hd_descs' => $band_hd_descs,
             'band_hd_no'    => $data["band_hd_no"],
             'dt_amount'     => $dt_amount,
+            'comm_amt'      => $comm_amt,
             'url_file'      => $url_data,
             'file_name'     => $file_data,
             'user_name'     => $data["user_name"],
