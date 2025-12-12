@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Mail\SendCmProgresswuMail;
+use App\Services\SmtpConfigService;
 use PDO;
 use DateTime;
 

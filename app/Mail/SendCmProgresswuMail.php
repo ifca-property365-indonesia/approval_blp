@@ -17,44 +17,30 @@ class SendCmProgresswuMail extends Mailable
     public $dataArray;
     public $fromName;
 
-    /**
-     * Create a new message instance.
-     *
-     * @param array $encryptedData
-     * @param array $dataArray
-     * @param string|null $fromName
-     * @return void
-     */
     public function __construct($encryptedData, $dataArray)
     {
         $this->encryptedData = $encryptedData;
         $this->dataArray = $dataArray;
-        // Ambil default dari .env
-        $defaultFromName = config('mail.from.name');  // "IFCA SOFTWARE"
-
-        // Ambil entity_name dari dataArray
+        
+        // Default dari config (sudah di override oleh DB sebelumnya)
+        $defaultFromName = config('mail.from.name');
         $entityName = $dataArray['entity_name'] ?? null;
 
-        // Tentukan final
+        // Contoh: "IFCA SOFTWARE - ZXY"
         $this->fromName = $entityName
             ? $defaultFromName . ' - ' . $entityName
             : $defaultFromName;
     }
-
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
+    
     public function build()
     {
-
-        return $this->from(config('mail.from.address'), $this->fromName)
-                    ->subject($this->dataArray['subject'])
-                    ->view('email.cmprogresswu.send')
-                    ->with([
-                        'encryptedData' => $this->encryptedData,
-                        'dataArray' => $this->dataArray,
-                    ]);
+        return $this
+            ->from(config('mail.from.address'), $this->fromName)
+            ->subject($this->dataArray['subject'])
+            ->view('email.cmprogresswu.send')
+            ->with([
+                'encryptedData' => $this->encryptedData,
+                'dataArray'     => $this->dataArray,
+            ]);
     }
 }
