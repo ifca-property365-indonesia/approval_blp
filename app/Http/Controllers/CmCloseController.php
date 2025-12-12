@@ -110,7 +110,6 @@ class CmCloseController extends Controller
                 if (!file_exists($cacheFilePath)) {
                     // Send email
                     Mail::to($email)
-			
                         ->send(new SendCmCloseMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
 
                     // Mark email as sent

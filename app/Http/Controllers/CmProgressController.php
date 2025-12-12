@@ -129,11 +129,8 @@ class CmProgressController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // Prepare email
-                    $mail = Mail::to($email);
-
-                    // Send email
-                    $mail
-			 ->send(new SendCmProgressMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
+                    Mail::to($email)
+                        ->send(new SendCmProgressMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
 
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');

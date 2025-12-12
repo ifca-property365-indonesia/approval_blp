@@ -117,8 +117,7 @@ class CbRumController extends Controller
                 if (!file_exists($cacheFilePath)) {
                     // Send email
                     Mail::to($email)
-			
-			->send(new SendCbRumMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
+                        ->send(new SendCbRumMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
 
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');

@@ -143,8 +143,7 @@ class LandSubmissionController extends Controller
                 if (!file_exists($cacheFilePath)) {
                     // Send email
                     Mail::to($emailAddress)
-			
-			->send(new LandSubmissionEmail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
+                        ->send(new LandSubmissionEmail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
 
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');

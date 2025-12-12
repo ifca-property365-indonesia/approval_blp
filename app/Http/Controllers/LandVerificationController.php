@@ -127,7 +127,8 @@ class LandVerificationController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // kirim email
-                    Mail::to($email_address)->send(new SendLandVerificationMail($encryptedData, $dataArray));
+                    Mail::to($email_address)
+                        ->send(new SendLandVerificationMail($encryptedData, $dataArray));
 
                     file_put_contents($cacheFilePath, 'sent');
                     Log::channel('sendmailapproval')->info("Email Land Verification doc_no $doc_no Entity $entity_cd berhasil dikirim ke: $email_address");

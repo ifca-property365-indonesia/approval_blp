@@ -125,7 +125,8 @@ class LandCancelNopController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // kirim email
-                    Mail::to($email_address)->send(new SendLandMail($encryptedData, $dataArray));
+                    Mail::to($email_address)
+                        ->send(new SendLandMail($encryptedData, $dataArray));
 
                     file_put_contents($cacheFilePath, 'sent');
                     Log::channel('sendmailapproval')->info("Email Land Cancel NOP doc_no $doc_no Entity $entity_cd berhasil dikirim ke: $email_address");

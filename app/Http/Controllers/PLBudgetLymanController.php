@@ -109,8 +109,7 @@ class PLBudgetLymanController extends Controller
                 if (!file_exists($cacheFilePath)) {
                     // Send email
                     Mail::to($email)
-			
-			->send(new SendPLLymanMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
+                        ->send(new SendPLLymanMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
 
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
