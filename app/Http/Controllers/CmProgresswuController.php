@@ -18,85 +18,97 @@ class CmProgresswuController extends Controller
 {
     public function Mail(Request $request)
     {
-
-        $curr_progress = number_format( $request->curr_progress , 2 , '.' , ',' );
-
-        $prev_progress = number_format( $request->prev_progress , 2 , '.' , ',' );
-
-        $amount = number_format( $request->amount , 2 , '.' , ',' );
-
-        $prev_progress_amt = number_format( $request->prev_progress_amt , 2 , '.' , ',' );
-
-        $list_of_approve = explode('; ',  $request->approve_exist);
-
-        $approve_data = [];
-        foreach ($list_of_approve as $approve) {
-            $approve_data[] = $approve;
-        }
-
-        $list_of_urls = explode(',', $request->url_file);
-        $list_of_files = explode(',', $request->file_name);
-
-        $url_data = [];
-        $file_data = [];
-
-        foreach ($list_of_urls as $url) {
-            $url_data[] = $url;
-        }
-
-        foreach ($list_of_files as $file) {
-            $file_data[] = $file;
-        }
-
-        $dataArray = array(
-            'sender'            => $request->sender,
-            'entity_name'       => $request->entity_name,
-            'descs'             => $request->descs,
-            'user_name'         => $request->user_name,
-            'progress_no'       => $request->progress_no,
-            "surveyor"			=> $request->surveyor,
-            'doc_link'          => $request->url_link,
-            'curr_cd'           => $request->curr_cd,
-            "contract_desc"		=> $request->contract_desc,
-            'curr_progress'     => $curr_progress,
-            'approve_seq'       => $request->approve_seq,
-            'amount'            => $amount,
-            'prev_progress'     => $prev_progress,
-            'prev_progress_amt' => $prev_progress_amt,
-            'contract_no'       => $request->contract_no,
-            'entity_name'       => $request->entity_name,
-            'module'            => $request->module,
-            'approve_list'      => $approve_data,
-            'url_file'          => $url_data,
-            'file_name'         => $file_data,
-            'clarify_user'      => $request->clarify_user,
-            'clarify_email'     => $request->clarify_email,
-            'sender_addr'       => $request->sender_addr,
-            'body'              => "Please approve Contract Progress No. ".$request->doc_no." for ".$request->descs,
-            'subject'           => "Need Approval for Contract Progress No.  ".$request->doc_no,
-        );
-
-        $data2Encrypt = array(
-            'entity_cd'     => $request->entity_cd,
-            'project_no'    => $request->project_no,
-            'email_address' => $request->email_addr,
-            'level_no'      => $request->level_no,
-            'doc_no'        => $request->doc_no,
-            'ref_no'        => $request->ref_no,
-            'usergroup'     => $request->usergroup,
-            'user_id'       => $request->user_id,
-            'supervisor'    => $request->supervisor,
-            'type'          => 'F',
-            'type_module'   => 'CM',
-            'text'          => 'Contract Progress'
-        );
-
-
-
-        // Melakukan enkripsi pada $dataArray
-        $encryptedData = Crypt::encrypt($data2Encrypt);
+        $callback = [
+            'data'  => null,
+            'Error' => false,
+            'Pesan' => '',
+            'Status'=> 200
+        ];
 
         try {
+            $curr_progress = number_format( $request->curr_progress , 2 , '.' , ',' );
+
+            $prev_progress = number_format( $request->prev_progress , 2 , '.' , ',' );
+
+            $amount = number_format( $request->amount , 2 , '.' , ',' );
+
+            $prev_progress_amt = number_format( $request->prev_progress_amt , 2 , '.' , ',' );
+
+            $list_of_approve = explode('; ',  $request->approve_exist);
+
+            $approve_data = [];
+            foreach ($list_of_approve as $approve) {
+                $approve_data[] = $approve;
+            }
+
+            $list_of_urls = explode(',', $request->url_file);
+            $list_of_files = explode(',', $request->file_name);
+
+            $url_data = [];
+            $file_data = [];
+
+            foreach ($list_of_urls as $url) {
+                $url_data[] = $url;
+            }
+
+            foreach ($list_of_files as $file) {
+                $file_data[] = $file;
+            }
+
+            $dataArray = array(
+                'sender'            => $request->sender,
+                'entity_name'       => $request->entity_name,
+                'descs'             => $request->descs,
+                'user_name'         => $request->user_name,
+                'progress_no'       => $request->progress_no,
+                "surveyor"			=> $request->surveyor,
+                'doc_link'          => $request->url_link,
+                'curr_cd'           => $request->curr_cd,
+                "contract_desc"		=> $request->contract_desc,
+                'curr_progress'     => $curr_progress,
+                'approve_seq'       => $request->approve_seq,
+                'amount'            => $amount,
+                'prev_progress'     => $prev_progress,
+                'prev_progress_amt' => $prev_progress_amt,
+                'contract_no'       => $request->contract_no,
+                'entity_name'       => $request->entity_name,
+                'module'            => $request->module,
+                'approve_list'      => $approve_data,
+                'url_file'          => $url_data,
+                'file_name'         => $file_data,
+                'clarify_user'      => $request->clarify_user,
+                'clarify_email'     => $request->clarify_email,
+                'sender_addr'       => $request->sender_addr,
+                'body'              => "Please approve Contract Progress No. ".$request->doc_no." for ".$request->descs,
+                'subject'           => "Need Approval for Contract Progress No.  ".$request->doc_no,
+            );
+
+            dd($dataArray);
+
+            $data2Encrypt = array(
+                'entity_cd'     => $request->entity_cd,
+                'project_no'    => $request->project_no,
+                'email_address' => $request->email_addr,
+                'level_no'      => $request->level_no,
+                'doc_no'        => $request->doc_no,
+                'ref_no'        => $request->ref_no,
+                'usergroup'     => $request->usergroup,
+                'user_id'       => $request->user_id,
+                'supervisor'    => $request->supervisor,
+                'type'          => 'F',
+                'type_module'   => 'CM',
+                'text'          => 'Contract Progress'
+            );
+
+            $encryptedData = Crypt::encrypt($data2Encrypt);
+
+            // isi callback data secara konsisten
+            $callback['data'] = [
+                'payload'   => $dataArray,
+                'encrypted' => $encryptedData
+            ];
+
+            // ====== Proses kirim email ======
             $emailAddresses = strtolower($request->email_addr);
             $approve_seq = $request->approve_seq;
             $entity_cd = $request->entity_cd;
@@ -105,7 +117,6 @@ class CmProgresswuController extends Controller
             $entity_name = $request->entity_name;
             $request_type = $request->request_type;
 
-            // Check if email addresses are provided and not empty
             if (!empty($emailAddresses)) {
                 $email = $emailAddresses; // Since $emailAddresses is always a single email address (string)
 
@@ -138,21 +149,32 @@ class CmProgresswuController extends Controller
 
                     // Log the success
                     Log::channel('sendmailapproval')->info('Email CM Progress doc_no '.$doc_no.' Entity ' . $entity_cd.' berhasil dikirim ke: ' . $email);
-                    return 'Email berhasil dikirim ke: ' . $email;
+                    $callback['Pesan'] = "Email berhasil dikirim ke: $email_address";
+                    $callback['Error'] = false;
+                    $callback['Status']= 200;
                 } else {
                     // Email was already sent
                     Log::channel('sendmailapproval')->info('Email CM Progress doc_no '.$doc_no.' Entity ' . $entity_cd.' already sent to: ' . $email);
-                    return 'Email has already been sent to: ' . $email;
+                    $callback['Pesan'] = "Email sudah pernah dikirim ke: $email_address";
+                    $callback['Error'] = false;
+                    $callback['Status']= 201;
                 }
             } else {
                 // No email address provided
                 Log::channel('sendmail')->warning("No email address provided for document " . $doc_no);
-                return "No email address provided";
+                $callback['Pesan'] = "No email address provided";
+                $callback['Error'] = true;
+                $callback['Status']= 400;
             }
         } catch (\Exception $e) {
-            Log::channel('sendmail')->error('Gagal mengirim email: ' . $e->getMessage());
-            return "Gagal mengirim email: " . $e->getMessage();
+            Log::channel('sendmail')->error("Gagal mengirim email: " . $e->getMessage());
+
+            $callback['Pesan'] = "Gagal mengirim email: " . $e->getMessage();
+            $callback['Error'] = true;
+            $callback['Status']= 500;
         }
+
+        return response()->json($callback, $callback['Status']);
     }
 
     public function processData($status='', $encrypt='')
