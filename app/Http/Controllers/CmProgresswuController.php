@@ -26,6 +26,8 @@ class CmProgresswuController extends Controller
         ];
 
         try {
+
+            dd($request->all());
             $curr_progress = number_format( $request->curr_progress , 2 , '.' , ',' );
 
             $prev_progress = number_format( $request->prev_progress , 2 , '.' , ',' );
