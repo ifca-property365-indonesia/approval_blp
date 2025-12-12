@@ -147,13 +147,13 @@ class CmProgresswuController extends Controller
 
                     // Log the success
                     Log::channel('sendmailapproval')->info('Email CM Progress doc_no '.$doc_no.' Entity ' . $entity_cd.' berhasil dikirim ke: ' . $email);
-                    $callback['Pesan'] = "Email berhasil dikirim ke: $email_address";
+                    $callback['Pesan'] = "Email berhasil dikirim ke: $email";
                     $callback['Error'] = false;
                     $callback['Status']= 200;
                 } else {
                     // Email was already sent
                     Log::channel('sendmailapproval')->info('Email CM Progress doc_no '.$doc_no.' Entity ' . $entity_cd.' already sent to: ' . $email);
-                    $callback['Pesan'] = "Email sudah pernah dikirim ke: $email_address";
+                    $callback['Pesan'] = "Email sudah pernah dikirim ke: $email";
                     $callback['Error'] = false;
                     $callback['Status']= 201;
                 }
