@@ -57,6 +57,8 @@ class CmProgresswuController extends Controller
 
             $dataArray = array(
                 'sender'            => $request->sender,
+                'entity_cd'         => $request->entity_cd,
+                'project_no'        => $request->project_no,
                 'doc_no'            => $request->doc_no,
                 'entity_name'       => $request->entity_name,
                 'descs'             => $request->descs,
