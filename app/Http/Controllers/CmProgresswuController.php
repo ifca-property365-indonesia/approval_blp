@@ -26,8 +26,6 @@ class CmProgresswuController extends Controller
         ];
 
         try {
-
-            dd($request->all());
             $curr_progress = number_format( $request->curr_progress , 2 , '.' , ',' );
 
             $prev_progress = number_format( $request->prev_progress , 2 , '.' , ',' );
@@ -84,8 +82,6 @@ class CmProgresswuController extends Controller
                 'body'              => "Please approve Contract Progress No. ".$request->doc_no." for ".$request->descs,
                 'subject'           => "Need Approval for Contract Progress No.  ".$request->doc_no,
             );
-
-            dd($dataArray);
 
             $data2Encrypt = array(
                 'entity_cd'     => $request->entity_cd,
