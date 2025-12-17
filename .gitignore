@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 composer.lock
 app/Http/Controllers/StaffActionController.php
+resources/views/email/cbfupd
