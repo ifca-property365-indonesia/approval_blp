@@ -30,8 +30,7 @@ class AutoSendController extends Controller
             ->table('mgr.cb_cash_request_appr')
             ->whereNull('sent_mail_date')
             ->where('status', 'P')
-            ->whereNotNull('currency_cd')
-            ->whereNotIn('entity_cd', ['DKY', 'DAN'])
+            ->whereNotIn('entity_cd', ['DKY', 'DAN', 'KIA'])
             ->orderByDesc('doc_no')
             ->get();
 
