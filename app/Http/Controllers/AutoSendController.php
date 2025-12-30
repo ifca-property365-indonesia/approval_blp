@@ -39,6 +39,7 @@ class AutoSendController extends Controller
             'CB' => [
                 'U' => 'mgr.x_send_mail_approval_cb_ppu',
                 'V' => 'mgr.x_send_mail_approval_cb_ppu_vvip',
+                'D' => 'mgr.x_send_mail_approval_cb_rpb',
             ],
             'PO' => [
                 'Q' => 'mgr.x_send_mail_approval_po_request',
@@ -69,7 +70,6 @@ class AutoSendController extends Controller
 
             // Skip kondisi tertentu
             if (
-                ($data->TYPE === 'D' && $data->module === 'CB') ||
                 ($data->TYPE === 'Y' && $data->module === 'CM')
             ) {
                 continue;
