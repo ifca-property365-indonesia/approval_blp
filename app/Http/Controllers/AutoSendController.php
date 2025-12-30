@@ -26,146 +26,159 @@ class AutoSendController extends Controller
 {
     public function index()
     {
-        $query = DB::connection('BLP')
-        ->table('mgr.cb_cash_request_appr')
-        ->whereNull('sent_mail_date')
-        ->where('status', 'P')
-        ->whereNotNull('currency_cd')
-        ->whereNotIn('entity_cd', ['DKY', 'DAN'])
-        ->where('audit_date', '>=', DB::raw("CONVERT(datetime, '2024-03-28', 120)"))
-        ->orderBy('doc_no', 'desc')
-        ->get();
+        $dataList = DB::connection('BLP')
+            ->table('mgr.cb_cash_request_appr')
+            ->whereNull('sent_mail_date')
+            ->where('status', 'P')
+            ->whereNotNull('currency_cd')
+            ->whereNotIn('entity_cd', ['DKY', 'DAN'])
+            ->orderByDesc('doc_no')
+            ->get();
 
-        foreach ($query as $data) {
-            $entity_cd = $data->entity_cd;
-            $exploded_values = explode(" ", $entity_cd);
-            $project_no = implode('', $exploded_values) . '01';
-            $doc_no = $data->doc_no;
-            $trx_type = $data->trx_type;
-            $level_no = $data->level_no;
-            $user_id = $data->user_id;
-            $type = $data->TYPE;
-            $module = $data->module;
-            $ref_no = $data->ref_no;
-            $doc_date = $data->doc_date;
-            $dateTime = new DateTime($doc_date);
-            $supervisor = 'Y';
-            $reason = '0';
+        $spMap = [
+            'CB' => [
+                'U' => 'mgr.x_send_mail_approval_cb_ppu',
+                'V' => 'mgr.x_send_mail_approval_cb_ppu_vvip',
+            ],
+            'PO' => [
+                'Q' => 'mgr.x_send_mail_approval_po_request',
+            ],
+            'LM' => [
+                'F' => 'mgr.xrl_send_mail_approval_land_fph',
+                'M' => 'mgr.xrl_send_mail_approval_land_handover_legal',
+                'H' => 'mgr.xrl_send_mail_approval_land_handover_shgb',
+                'B' => 'mgr.xrl_send_mail_approval_land_map',
+                'K' => 'mgr.xrl_send_mail_approval_land_measuring',
+                'A' => 'mgr.xrl_send_mail_approval_land_measuring_sft',
+                'R' => 'mgr.xrl_send_mail_approval_land_request',
+                'W' => 'mgr.xrl_send_mail_approval_land_request_legal',
+                'T' => 'mgr.xrl_send_mail_approval_land_sertifikat',
+                'Y' => 'mgr.xrl_send_mail_approval_land_sft_bphtb',
+                'J' => 'mgr.xrl_send_mail_approval_land_sft_merge_shgb',
+                'X' => 'mgr.xrl_send_mail_approval_land_sft_propose',
+                'Z' => 'mgr.xrl_send_mail_approval_land_sft_shgb',
+                'S' => 'mgr.xrl_send_mail_approval_land_sph',
+                'Q' => 'mgr.xrl_send_mail_approval_land_split_shgb',
+                'E' => 'mgr.xrl_send_mail_approval_land_submission',
+                'V' => 'mgr.xrl_send_mail_approval_land_verification',
+                '2' => 'mgr.xrl_send_mail_approval_land_verification_payment',
+            ],
+        ];
 
-            if ($type == 'U' && $module == "CB") {
-                $exec = 'mgr.x_send_mail_approval_cb_ppu';
-            } else if ($type == 'V' && $module == "CB") {
-                $exec = 'mgr.x_send_mail_approval_cb_ppu_vvip';
-            } else if ($type == 'Q' && $module == "PO") {
-                $exec = 'mgr.x_send_mail_approval_po_request';
+        foreach ($dataList as $data) {
+
+            // Skip kondisi tertentu
+            if (
+                ($data->TYPE === 'D' && $data->module === 'CB') ||
+                ($data->TYPE === 'Y' && $data->module === 'CM')
+            ) {
+                continue;
             }
-            $whereUg = array(
-                'user_name' => $user_id
-            );
 
-            $queryUg = DB::connection('BLP')
-            ->table('mgr.security_groupings')
-            ->where($whereUg)
-            ->get();
+            $exec = $spMap[$data->module][$data->TYPE] ?? null;
+            if (!$exec) {
+                continue;
+            }
 
-            $user_group = $queryUg[0]->group_name;
+            $entity_cd = $data->entity_cd;
+            $doc_no    = $data->doc_no;
+            $level_no  = $data->level_no;
+            $trx_type  = $data->trx_type;
+            $reason    = '0';
 
-            $wheresupervisor = array(
-                'name' => $user_id
-            );
-
-            $querysupervisor = DB::connection('BLP')
-            ->table('mgr.security_users')
-            ->where($wheresupervisor)
-            ->get();
-
-            $supervisor = $querysupervisor[0]->supervisor;
-
+            // ===== LEVEL 1 =====
             if ($level_no == 1) {
-                if ($type == 'Q' && $module == "PO") {
-                    $statussend = 'P';
-                    $downLevel = '0';
-                    $pdo = DB::connection('BLP')->getPdo();
-                    $sth = $pdo->prepare("SET NOCOUNT ON; EXEC mgr.x_send_mail_approval_po_request ?, ?, ?, ?, ?, ?, ?, ?, ?;");
-                    $sth->bindParam(1, $entity_cd);
-                    $sth->bindParam(2, $project_no);
-                    $sth->bindParam(3, $doc_no);
-                    $sth->bindParam(4, $statussend);
-                    $sth->bindParam(5, $downLevel);
-                    $sth->bindParam(6, $user_group);
-                    $sth->bindParam(7, $user_id);
-                    $sth->bindParam(8, $supervisor);
-                    $sth->bindParam(9, $reason);
-                    $sth->execute();
-                } else if (($type == 'D' && $module == "CB") || ($type == 'Y' && $module == "CM")) {
-                    // Skip this condition, do nothing for type 'D' and module 'CB'
-                    continue;  // This will skip the current iteration of the loop
-                } else {
-                    $statussend = 'P';
-                    $downLevel = '0';
-                    $pdo = DB::connection('BLP')->getPdo();
-                    $sth = $pdo->prepare("SET NOCOUNT ON; EXEC ".$exec." ?, ?, ?, ?, ?, ?, ?, ?, ?, ?;");
-                    $sth->bindParam(1, $entity_cd);
-                    $sth->bindParam(2, $project_no);
-                    $sth->bindParam(3, $doc_no);
-                    $sth->bindParam(4, $trx_type);
-                    $sth->bindParam(5, $statussend);
-                    $sth->bindParam(6, $downLevel);
-                    $sth->bindParam(7, $user_group);
-                    $sth->bindParam(8, $user_id);
-                    $sth->bindParam(9, $supervisor);
-                    $sth->bindParam(10, $reason);
-                    $sth->execute();
+
+                if ($data->module === 'LM') {
+                    $this->execSpLM($exec, $entity_cd, $doc_no, 'P', 0, $reason);
+                    continue;
                 }
-            } else if ($level_no > 1){
-                $downLevel  = $level_no - 1;
-                $statussend = 'A';
-                $wherebefore = array(
-                    'doc_no' => $doc_no,
-                    'entity_cd' => $entity_cd,
-                    'level_no'  => $downLevel
-                );
-    
-                $querybefore = DB::connection('BLP')
-                ->table('mgr.cb_cash_request_appr')
-                ->where($wherebefore)
-                ->get();
-    
-                $level_data = $querybefore[0]->status;
-                if ($level_data == 'A'){
-                    if ($type == 'Q' && $module == "PO") {
-                        $pdo = DB::connection('BLP')->getPdo();
-                        $sth = $pdo->prepare("SET NOCOUNT ON; EXEC mgr.x_send_mail_approval_po_request ?, ?, ?, ?, ?, ?, ?, ?, ?;");
-                        $sth->bindParam(1, $entity_cd);
-                        $sth->bindParam(2, $project_no);
-                        $sth->bindParam(3, $doc_no);
-                        $sth->bindParam(4, $statussend);
-                        $sth->bindParam(5, $downLevel);
-                        $sth->bindParam(6, $user_group);
-                        $sth->bindParam(7, $user_id);
-                        $sth->bindParam(8, $supervisor);
-                        $sth->bindParam(9, $reason);
-                        $sth->execute();
-                    } else if (($type == 'D' && $module == "CB") || ($type == 'Y' && $module == "CM")) {
-                        // Skip this condition, do nothing for type 'D' and module 'CB'
-                        continue;  // This will skip the current iteration of the loop
-                    } else {
-                        $pdo = DB::connection('BLP')->getPdo();
-                        $sth = $pdo->prepare("SET NOCOUNT ON; EXEC ".$exec." ?, ?, ?, ?, ?, ?, ?, ?, ?, ?;");
-                        $sth->bindParam(1, $entity_cd);
-                        $sth->bindParam(2, $project_no);
-                        $sth->bindParam(3, $doc_no);
-                        $sth->bindParam(4, $trx_type);
-                        $sth->bindParam(5, $statussend);
-                        $sth->bindParam(6, $downLevel);
-                        $sth->bindParam(7, $user_group);
-                        $sth->bindParam(8, $user_id);
-                        $sth->bindParam(9, $supervisor);
-                        $sth->bindParam(10, $reason);
-                        $sth->execute();
-                    }
+
+                // CB / PO
+                $this->execSpDefault($exec, $data, 'P', 0, $reason);
+            }
+
+            // ===== LEVEL > 1 =====
+            else {
+                $downLevel = $level_no - 1;
+
+                $prevStatus = DB::connection('BLP')
+                    ->table('mgr.cb_cash_request_appr')
+                    ->where([
+                        'doc_no'    => $doc_no,
+                        'entity_cd' => $entity_cd,
+                        'level_no'  => $downLevel
+                    ])
+                    ->value('status');
+
+                if ($prevStatus !== 'A') {
+                    continue;
                 }
+
+                if ($data->module === 'LM') {
+                    $this->execSpLM($exec, $entity_cd, $doc_no, 'A', $downLevel, $reason);
+                    continue;
+                }
+
+                // CB / PO
+                $this->execSpDefault($exec, $data, 'A', $downLevel, $reason);
             }
         }
     }
+
+    // =========================
+    // SP UNTUK CB & PO (10 PARAM)
+    // =========================
+    private function execSpDefault($sp, $data, $status, $downLevel, $reason)
+    {
+        $project_no = str_replace(' ', '', $data->entity_cd) . '01';
+
+        $user_group = DB::connection('BLP')
+            ->table('mgr.security_groupings')
+            ->where('user_name', $data->user_id)
+            ->value('group_name');
+
+        $supervisor = DB::connection('BLP')
+            ->table('mgr.security_users')
+            ->where('name', $data->user_id)
+            ->value('supervisor');
+
+        $pdo = DB::connection('BLP')->getPdo();
+
+        $sql = "SET NOCOUNT ON; EXEC {$sp} ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+        $stmt = $pdo->prepare($sql);
+
+        $stmt->execute([
+            $data->entity_cd,
+            $project_no,
+            $data->doc_no,
+            $data->trx_type,
+            $status,
+            $downLevel,
+            $user_group,
+            $data->user_id,
+            $supervisor,
+            $reason
+        ]);
+    }
+
+    // =========================
+    // SP KHUSUS LM (5 PARAM)
+    // =========================
+    private function execSpLM($sp, $entity_cd, $doc_no, $status, $level, $reason)
+    {
+        $pdo = DB::connection('BLP')->getPdo();
+
+        $sql = "SET NOCOUNT ON; EXEC {$sp} ?, ?, ?, ?, ?";
+        $stmt = $pdo->prepare($sql);
+
+        $stmt->execute([
+            $entity_cd,
+            $doc_no,
+            $status,
+            $level,
+            $reason
+        ]);
+    }
 }
+
