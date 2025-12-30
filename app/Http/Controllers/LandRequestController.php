@@ -84,8 +84,8 @@ class LandRequestController extends Controller
             }
 
             $paymentMap = [
-                'A' => 'Tolong berikan persetujuan untuk proses RFCA dengan detail :',
-                'I' => 'Tolong berikan persetujuan untuk proses RFP dengan detail :',
+                'A' => 'Tolong berikan persetujuan untuk proses AP Advanced dengan detail :',
+                'I' => 'Tolong berikan persetujuan untuk proses AP Invoice dengan detail :',
             ];
 
             $detailText = $paymentMap[$request->payment_cd]

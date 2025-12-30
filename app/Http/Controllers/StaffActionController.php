@@ -618,13 +618,13 @@ class StaffActionController extends Controller
             }
 
             $paymentMap = [
-                'A' => 'Tolong proses RFCA dengan detail :',
-                'I' => 'Tolong proses RFP dengan detail :',
+                'A' => 'Tolong proses AP Advance dengan detail :',
+                'I' => 'Tolong proses AP Invoice dengan detail :',
             ];
 
             $subjectMap = [
-                'A' => 'Land Transaction RFCA No. ' . $request->doc_no,
-                'I' => 'Land Transaction RFP No. ' . $request->doc_no,
+                'A' => 'Land Transaction AP Advance No. ' . $request->doc_no,
+                'I' => 'Land Transaction AP Invoice No. ' . $request->doc_no,
             ];
 
             $detailText = $paymentMap[$request->payment_cd]
