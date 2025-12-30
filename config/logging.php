@@ -124,7 +124,7 @@ return [
         ],
 
         'emergency' => [
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/' . date('Ymd') . '/laravel.log'),
         ],
 
         'sendmail' => [
@@ -144,6 +144,13 @@ return [
         'sendmailapproval' => [
             'driver' => 'daily', // You can choose the appropriate log driver (single, daily, syslog, etc.)
             'path' => storage_path('logs/sendmail/' . date('Ymd') . '/sendmailapproval.log'),
+            'ignore_exceptions' => false,
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
+	'resend' => [
+            'driver' => 'daily', // You can choose the appropriate log driver (single, daily, syslog, etc.)
+            'path' => storage_path('logs/sendmail/' . date('Ymd') . '/resend.log'),
             'ignore_exceptions' => false,
             'level' => env('LOG_LEVEL', 'debug'),
         ],
