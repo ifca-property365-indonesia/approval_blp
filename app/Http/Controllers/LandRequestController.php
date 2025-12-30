@@ -83,6 +83,16 @@ class LandRequestController extends Controller
                 $type_data[] = $type;
             }
 
+            $paymentMap = [
+                'A' => 'Tolong berikan persetujuan untuk proses RFCA dengan detail :',
+                'I' => 'Tolong berikan persetujuan untuk proses RFP dengan detail :',
+            ];
+
+            $detailText = $paymentMap[$request->payment_cd]
+                ?? 'Tolong berikan persetujuan untuk Pengajuan Pembayaran dengan detail :';
+
+            
+
             $dataArray = [
                 'user_id'           => $request->user_id,
                 'level_no'          => $request->level_no,
@@ -104,6 +114,7 @@ class LandRequestController extends Controller
                 'request_amt'       => $request_amt_data,
                 'clarify_user'		=> $request->sender_name,
                 'clarify_email'		=> $request->sender_addr,
+                'detail_text'       => $detailText,
                 'subject'           => "Need Approval for Land Request No.  ".$request->doc_no,
                 'link'              => 'landrequest',
             ];
