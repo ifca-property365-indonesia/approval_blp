@@ -43,6 +43,7 @@ class AutoSendController extends Controller
                 'G' => 'mgr.x_send_mail_approval_cb_rum',
             ],
             'PO' => [
+                'A' => 'mgr.x_send_mail_approval_po_order',
                 'Q' => 'mgr.x_send_mail_approval_po_request',
             ],
             'LM' => [
@@ -65,6 +66,14 @@ class AutoSendController extends Controller
                 'V' => 'mgr.xrl_send_mail_approval_land_verification',
                 '2' => 'mgr.xrl_send_mail_approval_land_verification_payment',
             ],
+            'CM' => [
+                'E' => 'mgr.xrl_send_mail_approval_cm_contract_entry',
+                'C' => 'mgr.xrl_send_mail_approval_cm_contractclose',
+                'B' => 'mgr.xrl_send_mail_approval_cm_contractdone',
+                'A' => 'mgr.xrl_send_mail_approval_cm_progress',
+                'F' => 'mgr.xrl_send_mail_approval_cm_progress_with_unit',
+                'D' => 'mgr.xrl_send_mail_approval_cm_varianorder',
+            ],
         ];
 
         foreach ($dataList as $data) {
@@ -85,6 +94,8 @@ class AutoSendController extends Controller
             $doc_no    = $data->doc_no;
             $level_no  = $data->level_no;
             $trx_type  = $data->trx_type;
+            $user_id   = $data->user_id;
+            $ref_no    = $data->ref_no;
             $reason    = '0';
 
             // ===== LEVEL 1 =====
@@ -93,7 +104,14 @@ class AutoSendController extends Controller
                 if ($data->module === 'LM') {
                     $this->execSpLM($exec, $entity_cd, $doc_no, 'P', 0, $reason);
                     continue;
+                } else if ( $data->module === 'CM') {
+                    $this->execSpref_no($exec, $data, 'P', 0, $reason);
+                    continue;
+                } else if ( $data->module === 'PL') {
+                    $this->execPL($exec, $data, 'P', 0, $reason);
+                    continue;
                 }
+                
 
                 // CB / PO
                 $this->execSpDefault($exec, $data, 'P', 0, $reason);
@@ -119,6 +137,12 @@ class AutoSendController extends Controller
                 if ($data->module === 'LM') {
                     $this->execSpLM($exec, $entity_cd, $doc_no, 'A', $downLevel, $reason);
                     continue;
+                } else if ( $data->module === 'CM') {
+                    $this->execSpref_no($exec, $data, 'A', $downLevel, $reason);
+                    continue;
+                } else if ( $data->module === 'PL') {
+                    $this->execPL($exec, $data, 'A', $downLevel, $reason);
+                    continue;
                 }
 
                 // CB / PO
@@ -128,7 +152,7 @@ class AutoSendController extends Controller
     }
 
     // =========================
-    // SP UNTUK CB & PO (10 PARAM)
+    // SP UNTUK CB & PO Selain PO Selection(10 PARAM)
     // =========================
     private function execSpDefault($sp, $data, $status, $downLevel, $reason)
     {
@@ -178,6 +202,47 @@ class AutoSendController extends Controller
             $doc_no,
             $status,
             $level,
+            $reason
+        ]);
+    }
+
+    // =========================
+    // SP UNTUK CM (10 PARAM)
+    // =========================
+    private function execSpref_no($sp, $data, $status, $downLevel, $reason)
+    {
+        $project_no = str_replace(' ', '', $data->entity_cd) . '01';
+
+        // ref_no tetap EMPTY STRING (bukan NULL)
+        $refNo = is_string($data->ref_no)
+            ? trim($data->ref_no)
+            : '';
+
+        $user_group = DB::connection('BLP')
+            ->table('mgr.security_groupings')
+            ->where('user_name', $data->user_id)
+            ->value('group_name');
+
+        $supervisor = DB::connection('BLP')
+            ->table('mgr.security_users')
+            ->where('name', $data->user_id)
+            ->value('supervisor');
+
+        $pdo = DB::connection('BLP')->getPdo();
+
+        $sql = "SET NOCOUNT ON; EXEC {$sp} ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+        $stmt = $pdo->prepare($sql);
+
+        $stmt->execute([
+            $data->entity_cd,
+            $project_no,
+            $data->doc_no,
+            $refNo,           // ← SELALU '' jika kosong
+            $status,
+            $downLevel,
+            $user_group,
+            $data->user_id,
+            $supervisor,
             $reason
         ]);
     }
