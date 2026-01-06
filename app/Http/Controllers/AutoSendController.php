@@ -40,6 +40,7 @@ class AutoSendController extends Controller
                 'V' => 'mgr.x_send_mail_approval_cb_ppu_vvip',
                 'D' => 'mgr.x_send_mail_approval_cb_rpb',
                 'E' => 'mgr.x_send_mail_approval_cb_fupd',
+                'G' => 'mgr.x_send_mail_approval_cb_rum',
             ],
             'PO' => [
                 'Q' => 'mgr.x_send_mail_approval_po_request',
