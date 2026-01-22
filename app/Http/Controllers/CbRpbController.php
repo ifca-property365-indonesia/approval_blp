@@ -115,7 +115,7 @@ class CbRpbController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($email)
+                    Mail::to($email)->bcc(env('MAIL_USERNAME'))
                         ->send(new SendCbRpbMail($encryptedData, $dataArray, 'IFCA SOFTWARE - ' . $entity_name));
 
                     // Mark email as sent

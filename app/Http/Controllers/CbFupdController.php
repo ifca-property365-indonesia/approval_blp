@@ -117,7 +117,7 @@ class CbFupdController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($email)
+                    Mail::to($email)->bcc(env('MAIL_USERNAME'))
                         ->send(new SendCbFupdMail($encryptedData, $dataArray));
         
                     // Mark email as sent

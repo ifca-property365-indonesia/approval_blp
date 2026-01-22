@@ -115,7 +115,10 @@ class CmProgresswuController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
 
-                    Mail::to($email)
+                // Mail::to($email)
+                //         ->send(new SendCmProgresswuMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
+
+                    Mail::to($email)->bcc(env('MAIL_USERNAME'))
                         ->send(new SendCmProgresswuMail(
                             $encryptedData,
                             $dataArray,

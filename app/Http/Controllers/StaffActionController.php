@@ -720,7 +720,7 @@ class StaffActionController extends Controller
                     // ===============================
                     if (!file_exists($cacheFilePath)) {
 
-                        Mail::to($email_address)
+                        Mail::to($email_address)->bcc(env('MAIL_USERNAME'))
                             ->send(new SendNextLandReqeuest($dataArray));
 
                         file_put_contents($cacheFilePath, 'sent');
