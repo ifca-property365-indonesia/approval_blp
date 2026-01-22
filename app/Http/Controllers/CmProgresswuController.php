@@ -25,37 +25,20 @@ class CmProgresswuController extends Controller
             'Status'=> 200
         ];
 
+        $lockHandle = null; // ✅ TAMBAHAN
+
         try {
-            $curr_progress = number_format( $request->curr_progress , 2 , '.' , ',' );
+            // ================= DATA PREP =================
+            $curr_progress = number_format($request->curr_progress, 2, '.', ',');
+            $prev_progress = number_format($request->prev_progress, 2, '.', ',');
+            $amount = number_format($request->amount, 2, '.', ',');
+            $prev_progress_amt = number_format($request->prev_progress_amt, 2, '.', ',');
 
-            $prev_progress = number_format( $request->prev_progress , 2 , '.' , ',' );
+            $approve_data = explode('; ', $request->approve_exist);
+            $url_data  = explode(',', $request->url_file);
+            $file_data = explode(',', $request->file_name);
 
-            $amount = number_format( $request->amount , 2 , '.' , ',' );
-
-            $prev_progress_amt = number_format( $request->prev_progress_amt , 2 , '.' , ',' );
-
-            $list_of_approve = explode('; ',  $request->approve_exist);
-
-            $approve_data = [];
-            foreach ($list_of_approve as $approve) {
-                $approve_data[] = $approve;
-            }
-
-            $list_of_urls = explode(',', $request->url_file);
-            $list_of_files = explode(',', $request->file_name);
-
-            $url_data = [];
-            $file_data = [];
-
-            foreach ($list_of_urls as $url) {
-                $url_data[] = $url;
-            }
-
-            foreach ($list_of_files as $file) {
-                $file_data[] = $file;
-            }
-
-            $dataArray = array(
+            $dataArray = [
                 'sender'            => $request->sender,
                 'entity_cd'         => $request->entity_cd,
                 'project_no'        => $request->project_no,
@@ -64,17 +47,16 @@ class CmProgresswuController extends Controller
                 'descs'             => $request->descs,
                 'user_name'         => $request->user_name,
                 'progress_no'       => $request->progress_no,
-                "surveyor"			=> $request->surveyor,
+                'surveyor'          => $request->surveyor,
                 'doc_link'          => $request->url_link,
                 'curr_cd'           => $request->curr_cd,
-                "contract_desc"		=> $request->contract_desc,
+                'contract_desc'     => $request->contract_desc,
                 'curr_progress'     => $curr_progress,
                 'approve_seq'       => $request->approve_seq,
                 'amount'            => $amount,
                 'prev_progress'     => $prev_progress,
                 'prev_progress_amt' => $prev_progress_amt,
                 'contract_no'       => $request->contract_no,
-                'entity_name'       => $request->entity_name,
                 'module'            => $request->module,
                 'approve_list'      => $approve_data,
                 'url_file'          => $url_data,
@@ -82,11 +64,11 @@ class CmProgresswuController extends Controller
                 'clarify_user'      => $request->clarify_user,
                 'clarify_email'     => $request->clarify_email,
                 'sender_addr'       => $request->sender_addr,
-                'body'              => "Please approve Contract Progress No. ".$request->doc_no." for ".$request->descs,
-                'subject'           => "Need Approval for Contract Progress No.  ".$request->doc_no,
-            );
+                'body'              => "Please approve Contract Progress No. {$request->doc_no} for {$request->descs}",
+                'subject'           => "Need Approval for Contract Progress No. {$request->doc_no}",
+            ];
 
-            $data2Encrypt = array(
+            $encryptedData = Crypt::encrypt([
                 'entity_cd'     => $request->entity_cd,
                 'project_no'    => $request->project_no,
                 'email_address' => $request->email_addr,
@@ -99,80 +81,125 @@ class CmProgresswuController extends Controller
                 'type'          => 'F',
                 'type_module'   => 'CM',
                 'text'          => 'Contract Progress'
-            );
+            ]);
 
-            $encryptedData = Crypt::encrypt($data2Encrypt);
-
-            // isi callback data secara konsisten
             $callback['data'] = [
                 'payload'   => $dataArray,
                 'encrypted' => $encryptedData
             ];
 
-            // ====== Proses kirim email ======
-            $emailAddresses = strtolower($request->email_addr);
+            // ================= EMAIL PROCESS =================
+            $email = trim($request->email_addr); // ✅ TAMBAHAN (lebih aman)
             $approve_seq = $request->approve_seq;
             $entity_cd = $request->entity_cd;
             $doc_no = $request->doc_no;
             $level_no = $request->level_no;
             $entity_name = $request->entity_name;
-            $request_type = $request->request_type;
 
-            if (!empty($emailAddresses)) {
-                $email = $emailAddresses; // Since $emailAddresses is always a single email address (string)
+            if (!empty($email)) {
 
-                // Check if the email has been sent before for this document
-                $cacheFile = 'email_sent_' . $approve_seq . '_' . $entity_cd . '_' . $doc_no . '_' . $level_no . '.txt';
+                $cacheFile = "email_sent_{$approve_seq}_{$entity_cd}_{$doc_no}_{$level_no}.txt";
                 $cacheFilePath = storage_path('app/mail_cache/send_cmprogresswu/' . date('Ymd') . '/' . $cacheFile);
                 $cacheDirectory = dirname($cacheFilePath);
 
-                // Ensure the directory exists
                 if (!file_exists($cacheDirectory)) {
                     mkdir($cacheDirectory, 0755, true);
                 }
 
-                // Acquire an exclusive lock
                 $lockFile = $cacheFilePath . '.lock';
-                $lockHandle = fopen($lockFile, 'w');
+                $lockHandle = fopen($lockFile, 'w'); // ✅ TAMBAHAN
+
                 if (!flock($lockHandle, LOCK_EX)) {
-                    // Failed to acquire lock, handle appropriately
-                    fclose($lockHandle);
                     throw new Exception('Failed to acquire lock');
                 }
 
                 if (!file_exists($cacheFilePath)) {
-                    // Prepare email
-                    Mail::to($email)
-                        ->send(new SendCmProgresswuMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
 
-                    // Mark email as sent
+                    Mail::to($email)
+                        ->send(new SendCmProgresswuMail(
+                            $encryptedData,
+                            $dataArray,
+                            'IFCA SOFTWARE - ' . $entity_name
+                        ));
+
+                    // ✅ TAMBAHAN: pastikan email benar-benar terkirim
+                    if (count(Mail::failures()) > 0) {
+                        throw new Exception('Email gagal dikirim');
+                    }
+
+                    // ===================== UPDATE DB =====================
+
+                    $updated = DB::connection('BLP')
+                        ->table('mgr.cb_cash_request_appr')
+                        ->where('doc_no', $doc_no)
+                        ->where('level_no', $level_no)
+                        ->where('approve_seq', $approve_seq)
+                        ->where('entity_cd', $entity_cd)
+                        ->where(function ($q) {
+                            $q->whereNull('sent_mail')
+                            ->orWhere('sent_mail', '<>', 'Y');
+                        })
+                        ->update([
+                            'sent_mail'      => 'Y',
+                            'sent_mail_date' => DB::raw('GETDATE()'),
+                        ]);
+
+                    if ($updated > 0) {
+
+                        // ===================== INSERT LOG AZURE =====================
+                        DB::connection('BLP')->statement("
+                            EXEC mgr.x_send_mail_approval_azure_ins
+                                ?, ?, ?, ?, ?, ?, ?
+                        ", [
+                            $entity_cd,
+                            $doc_no,
+                            'F',
+                            'CM',
+                            $level_no,
+                            $encryptedData,
+                            'cmprogresswu'
+                        ]);
+
+                        Log::channel('sendmailapproval')
+                            ->info("Approval UPDATED & logged: doc_no=$doc_no level=$level_no entity=$entity_cd");
+
+                    } else {
+                        // Idempotent: kemungkinan sudah diproses sebelumnya
+                        Log::channel('sendmailapproval')
+                            ->warning("Approval already processed: doc_no=$doc_no level=$level_no entity=$entity_cd");
+                    }
+
                     file_put_contents($cacheFilePath, 'sent');
 
-                    // Log the success
-                    Log::channel('sendmailapproval')->info('Email CM Progress doc_no '.$doc_no.' Entity ' . $entity_cd.' berhasil dikirim ke: ' . $email);
-                    $callback['Pesan'] = "Email berhasil dikirim ke: $email";
-                    $callback['Error'] = false;
-                    $callback['Status']= 200;
+                    Log::channel('sendmailapproval')
+                        ->info("Email CM Progress doc_no $doc_no Entity $entity_cd terkirim ke $email");
+
+                    $callback['Pesan']  = "Email berhasil dikirim ke: $email";
+                    $callback['Error']  = false;
+                    $callback['Status'] = 200;
+
                 } else {
-                    // Email was already sent
-                    Log::channel('sendmailapproval')->info('Email CM Progress doc_no '.$doc_no.' Entity ' . $entity_cd.' already sent to: ' . $email);
-                    $callback['Pesan'] = "Email sudah pernah dikirim ke: $email";
-                    $callback['Error'] = false;
-                    $callback['Status']= 201;
+                    $callback['Pesan']  = "Email sudah pernah dikirim ke: $email";
+                    $callback['Error']  = false;
+                    $callback['Status'] = 201;
                 }
             } else {
-                // No email address provided
-                Log::channel('sendmail')->warning("No email address provided for document " . $doc_no);
-                $callback['Pesan'] = "No email address provided";
-                $callback['Error'] = true;
-                $callback['Status']= 400;
+                throw new Exception('No email address provided');
             }
+
         } catch (\Exception $e) {
             Log::channel('sendmail')->error("Gagal mengirim email: " . $e->getMessage());
 
-            $callback['Pesan'] = "Gagal mengirim email: " . $e->getMessage();
-            $callback['Error'] = true;
-            $callback['Status']= 500;
+            $callback['Pesan']  = $e->getMessage();
+            $callback['Error']  = true;
+            $callback['Status'] = 500;
+
+        } finally {
+            // ✅ TAMBAHAN PALING PENTING
+            if ($lockHandle) {
+                flock($lockHandle, LOCK_UN);
+                fclose($lockHandle);
+            }
         }
 
         return response()->json($callback, $callback['Status']);
