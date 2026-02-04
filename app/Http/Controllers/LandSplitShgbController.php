@@ -343,33 +343,33 @@ class LandSplitShgbController extends Controller
             $descstatus = "Cancelled";
             $imagestatus = "reject.png";
         }
-        $pdo = DB::connection('BLP')->getPdo();
-        $sth = $pdo->prepare("EXEC mgr.xrl_send_mail_approval_land_split_shgb ?, ?, ?, ?, ?");
-        $success = $sth->execute([
-            $data["entity_cd"],
-            $data["doc_no"],
-            $status,
-            $data["level_no"],
-            $reason
-        ]);
-        if ($success) {
-            $msg = "You Have Successfully ".$descstatus." the Land Split SHGB No. ".$data["doc_no"];
-            $notif = $descstatus." !";
-            $st = 'OK';
-            $image = $imagestatus;
-        } else {
-            $msg = "You Failed to ".$descstatus." the Land Split SHGB No.".$data["doc_no"];
-            $notif = 'Fail to '.$descstatus.' !';
-            $st = 'FAIL';
-            $image = "reject.png";
-        }
-        $msg1 = array(
-            "Pesan" => $msg,
-            "St" => $st,
-            "notif" => $notif,
-            "image" => $image,
-            'entity_name'   => $request->entity_name,
-        );
-        return view("email.remark.after", $msg1);
+        // $pdo = DB::connection('BLP')->getPdo();
+        // $sth = $pdo->prepare("EXEC mgr.xrl_send_mail_approval_land_split_shgb ?, ?, ?, ?, ?");
+        // $success = $sth->execute([
+        //     $data["entity_cd"],
+        //     $data["doc_no"],
+        //     $status,
+        //     $data["level_no"],
+        //     $reason
+        // ]);
+        // if ($success) {
+        //     $msg = "You Have Successfully ".$descstatus." the Land Split SHGB No. ".$data["doc_no"];
+        //     $notif = $descstatus." !";
+        //     $st = 'OK';
+        //     $image = $imagestatus;
+        // } else {
+        //     $msg = "You Failed to ".$descstatus." the Land Split SHGB No.".$data["doc_no"];
+        //     $notif = 'Fail to '.$descstatus.' !';
+        //     $st = 'FAIL';
+        //     $image = "reject.png";
+        // }
+        // $msg1 = array(
+        //     "Pesan" => $msg,
+        //     "St" => $st,
+        //     "notif" => $notif,
+        //     "image" => $image,
+        //     'entity_name'   => $request->entity_name,
+        // );
+        // return view("email.remark.after", $msg1);
     }
 }
