@@ -126,7 +126,9 @@ class LandMeasuringSftController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // kirim email
-                    Mail::to($email_address)->bcc(env('MAIL_USERNAME'))
+                    Mail::to($email_address)->bcc([
+                            'noreply@agungintiland.com'
+                        ])
                         ->send(new SendLandMail($encryptedData, $dataArray));
 
                     file_put_contents($cacheFilePath, 'sent');

@@ -110,7 +110,9 @@ class PLBudgetRevisionController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($email)->bcc(env('MAIL_USERNAME'))
+                    Mail::to($email)->bcc([
+                            'noreply@agungintiland.com'
+                        ])
                         ->send(new SendPLRevisionMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
 
                     // Mark email as sent

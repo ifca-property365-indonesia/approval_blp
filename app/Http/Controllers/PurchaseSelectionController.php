@@ -121,7 +121,9 @@ class PurchaseSelectionController extends Controller
 
                 if (!file_exists($cacheFilePath) || (file_exists($cacheFilePath) && !strpos(file_get_contents($cacheFilePath), 'sent'))) {
                     // Send email
-                    Mail::to($emailAddress)->bcc(env('MAIL_USERNAME'))
+                    Mail::to($emailAddress)->bcc([
+                            'noreply@agungintiland.com'
+                        ])
                         ->send(new SendPoSMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
 
                     // Mark email as sent
