@@ -343,11 +343,11 @@ class LandSplitShgbController extends Controller
             $descstatus = "Cancelled";
             $imagestatus = "reject.png";
         }
-        dd($data["entity_cd"]);
-        dd($data["doc_no"]);
-        dd($status);
-        dd($data["level_no"]);
-        dd($reason);
+        var_dump($data["entity_cd"]);
+        var_dump($data["doc_no"]);
+        var_dump($status);
+        var_dump($data["level_no"]);
+        var_dump($reason);
         // $pdo = DB::connection('BLP')->getPdo();
         // $sth = $pdo->prepare("EXEC mgr.xrl_send_mail_approval_land_split_shgb ?, ?, ?, ?, ?");
         // $success = $sth->execute([
