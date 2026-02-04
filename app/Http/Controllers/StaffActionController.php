@@ -98,7 +98,10 @@ class StaffActionController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emailAddress)->send(new StaffActionMail($EmailBack));
+                    Mail::to($emailAddress)->bcc([
+                            'noreply@agungintiland.com'
+                        ])
+                        ->send(new StaffActionMail($EmailBack));
                     
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
@@ -257,7 +260,9 @@ class StaffActionController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emails)->send($mail);
+                    Mail::to($emails)->bcc([
+                            'noreply@agungintiland.com'
+                        ])->send($mail);
         
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
@@ -379,7 +384,9 @@ class StaffActionController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emailAddress)->send(new StaffActionPoSMail($EmailBack));
+                    Mail::to($emailAddress)->bcc([
+                            'noreply@agungintiland.com'
+                        ])->send(new StaffActionPoSMail($EmailBack));
         
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
@@ -510,7 +517,9 @@ class StaffActionController extends Controller
                 }
 
                 if (!file_exists($cacheFilePath)) {
-                    Mail::to($emails)->send($mail);
+                    Mail::to($emails)->bcc([
+                            'noreply@agungintiland.com'
+                        ])->send($mail);
                     file_put_contents($cacheFilePath, 'sent');
 
                     $sentTo = implode(', ', $emails);
@@ -720,8 +729,9 @@ class StaffActionController extends Controller
                     // ===============================
                     if (!file_exists($cacheFilePath)) {
 
-                        Mail::to($email_address)->bcc(env('MAIL_USERNAME'))
-                            ->send(new SendNextLandReqeuest($dataArray));
+                        Mail::to($email_address)->bcc([
+                            'noreply@agungintiland.com'
+                        ])->send(new SendNextLandReqeuest($dataArray));
 
                         file_put_contents($cacheFilePath, 'sent');
 
