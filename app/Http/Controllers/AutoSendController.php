@@ -71,7 +71,6 @@ class AutoSendController extends Controller
                 'C' => 'mgr.xrl_send_mail_approval_cm_contractclose',
                 'B' => 'mgr.xrl_send_mail_approval_cm_contractdone',
                 'A' => 'mgr.xrl_send_mail_approval_cm_progress',
-                'F' => 'mgr.xrl_send_mail_approval_cm_progress_with_unit',
                 'D' => 'mgr.xrl_send_mail_approval_cm_varianorder',
             ],
         ];
@@ -80,7 +79,7 @@ class AutoSendController extends Controller
 
             // Skip kondisi tertentu
             if (
-                ($data->TYPE === 'Y' && $data->module === 'CM')
+                (($data->TYPE === 'Y'|| $data->TYPE === 'F') && $data->module === 'CM')
             ) {
                 continue;
             }

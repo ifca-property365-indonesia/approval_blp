@@ -93,6 +93,7 @@
                                     'CM-C': 'Warranty Complete',
                                     'CM-D': 'Varian Order',
                                     'CM-E': 'Contract Entry',
+                                    'CM-F': 'Contract Progress with Unit',
                                     'PL-Y': 'PL Budget',
                                     'TM-R': 'Contract Renew'
                                 };
