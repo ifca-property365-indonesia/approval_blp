@@ -357,19 +357,16 @@ class LandSplitShgbController extends Controller
         ]);
 
         $sth->closeCursor();
-        // if ($success) {
-        //     $msg = "You Have Successfully ".$descstatus." the Land Split SHGB No. ".$data["doc_no"];
-        //     $notif = $descstatus." !";
-        //     $st = 'OK';
-        //     $image = $imagestatus;
-        // } else {
-        //     $msg = "You Failed to ".$descstatus." the Land Split SHGB No.".$data["doc_no"];
-        //     $notif = 'Fail to '.$descstatus.' !';
-        //     $st = 'FAIL';
-        //     $image = "reject.png";
-        // }
-        if (!$success) {
-            dd($sth->errorInfo());
+        if ($success) {
+            $msg = "You Have Successfully ".$descstatus." the Land Split SHGB No. ".$data["doc_no"];
+            $notif = $descstatus." !";
+            $st = 'OK';
+            $image = $imagestatus;
+        } else {
+            $msg = "You Failed to ".$descstatus." the Land Split SHGB No.".$data["doc_no"];
+            $notif = 'Fail to '.$descstatus.' !';
+            $st = 'FAIL';
+            $image = "reject.png";
         }
         $msg1 = array(
             "Pesan" => $msg,
