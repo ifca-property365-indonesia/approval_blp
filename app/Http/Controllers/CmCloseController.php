@@ -66,6 +66,7 @@ class CmCloseController extends Controller
             'usergroup'     => $request->usergroup,
             'user_id'       => $request->user_id,
             'supervisor'    => $request->supervisor,
+            'entity_name'       => $request->entity_name,
             'type'          => 'C',
             'type_module'   => 'CM',
             'text'          => 'Contract Progress'
@@ -196,6 +197,7 @@ class CmCloseController extends Controller
         $dataView = [
             "status"    => $status,
             "encrypt"   => $encrypt,
+            "entity_name" => $data["entity_name"] ?? "PT BANGUN LAKSANA PERSADA",
             "name"      => $statusData[0],
             "bgcolor"   => $statusData[1],
             "valuebt"   => $statusData[2]

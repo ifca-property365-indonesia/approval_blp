@@ -75,6 +75,7 @@ class CbFupdController extends Controller
             'usergroup'     => $data["usergroup"],
             'user_id'       => $data["user_id"],
             'supervisor'    => $data["supervisor"],
+            'entity_name'   => $data["entity_name"],
             'type'          => 'E',
             'type_module'   => 'CB',
             'text'          => 'Propose Transfer to Bank'

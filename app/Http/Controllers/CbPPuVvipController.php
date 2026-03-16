@@ -79,6 +79,7 @@ class CbPPuVvipController extends Controller
             'user_id'       => $request->user_id,
             'supervisor'    => $request->supervisor,
             'email_address' => $request->email_addr,
+            'entity_name'   => $request->entity_name,
             'type'          => 'V',
             'type_module'   => 'CB',
             'text'          => 'Payment Request'
@@ -209,6 +210,7 @@ class CbPPuVvipController extends Controller
             "status"    => $status,
             "doc_no"    => $data["doc_no"],
             "email"     => $data["email_address"],
+            "entity_name" => $data["entity_name"] ?? "PT BANGUN LAKSANA PERSADA",
             "encrypt"   => $encrypt,
             "name"      => $statusData[0],
             "bgcolor"   => $statusData[1],

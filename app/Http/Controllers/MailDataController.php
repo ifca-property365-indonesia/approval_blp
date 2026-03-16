@@ -87,6 +87,7 @@ class MailDataController extends Controller
             "status"    => $status,
             "doc_no"    => $data["doc_no"],
             "email"     => $data["email_address"],
+            "entity_name" => $data["entity_name"] ?? "PT BANGUN LAKSANA PERSADA",
             "module"    => $module,
             "encrypt"   => $encrypt,
             "name"      => $statusData[0],

@@ -36,7 +36,9 @@
                                         alt="logo" 
                                         height="56" 
                                         style="display:inline-block; border:0; outline:none; text-decoration:none;">
-                                    <p style="font-size: 16px; color: #026735; padding-top: 0px;">PT BANGUN LAKSANA PERSADA</p>
+                                    <p style="font-size: 16px; color: #026735; padding-top: 0px;">
+                                        {{ $entity_name ?? "PT BANGUN LAKSANA PERSADA"}}
+                                    </p>
                                 </td>
                             </tr>
                         </tbody>
