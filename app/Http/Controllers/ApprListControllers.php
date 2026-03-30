@@ -387,7 +387,7 @@ class ApprListControllers extends Controller
 
         $route = $routes[$module][$type];
 
-        Log::info("DELETE CACHE INIT", [
+        Log::channel('resend_apprlist')->info("DELETE CACHE INIT", [
             'dir' => $route["dir"],
             'pattern' => $pattern,
             'date' => $date

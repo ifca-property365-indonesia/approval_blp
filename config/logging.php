@@ -148,9 +148,15 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
-	'resend' => [
+	    'resend' => [
             'driver' => 'daily', // You can choose the appropriate log driver (single, daily, syslog, etc.)
             'path' => storage_path('logs/sendmail/' . date('Ymd') . '/resend.log'),
+            'ignore_exceptions' => false,
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+        'resend_apprlist' => [
+            'driver' => 'daily', // You can choose the appropriate log driver (single, daily, syslog, etc.)
+            'path' => storage_path('logs/sendmail/' . date('Ymd') . '/apprlist.log'),
             'ignore_exceptions' => false,
             'level' => env('LOG_LEVEL', 'debug'),
         ],
