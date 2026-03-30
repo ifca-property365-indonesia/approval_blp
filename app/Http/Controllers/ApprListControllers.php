@@ -115,15 +115,32 @@ class ApprListControllers extends Controller
         // === Helper untuk Delete File ===
         $deleteCacheFile = function ($directory, $pattern) {
             $base = base_path()."/storage/app/mail_cache/$directory";
+
             $txt  = "$base/{$pattern}.txt";
             $lock = "$base/{$pattern}.txt.lock";
 
-            if (file_exists($txt))  unlink($txt);
-            if (file_exists($lock)) unlink($lock);
+            Log::info("=== DELETE CACHE FILE ===", [
+                'directory'   => $directory,
+                'base_path'   => $base,
+                'txt_path'    => $txt,
+                'lock_path'   => $lock,
+                'exists_txt'  => file_exists($txt),
+                'exists_lock' => file_exists($lock),
+            ]);
+
+            if (file_exists($txt)) {
+                unlink($txt);
+                Log::info("TXT deleted", ['file' => $txt]);
+            }
+
+            if (file_exists($lock)) {
+                unlink($lock);
+                Log::info("LOCK deleted", ['file' => $lock]);
+            }
         };
 
         // === Mapping Module & Type ke Procedure dan Params ===
-        $pattern = "email_sent_{$approve_seq}_{$entity_cd}_{$doc_no}_{$level_no}";
+        $pattern = "email_sent_{$approve_seq}_{$entity_cd}_{$doc_no}_{$.}";
         $date = date('Ymd');
 
         $routes = [
@@ -368,6 +385,12 @@ class ApprListControllers extends Controller
         }
 
         $route = $routes[$module][$type];
+
+        Log::info("DELETE CACHE INIT", [
+            'dir' => $route["dir"],
+            'pattern' => $pattern,
+            'date' => $date
+        ]);
 
         // Hapus file cache
         $deleteCacheFile($route["dir"], $pattern);
