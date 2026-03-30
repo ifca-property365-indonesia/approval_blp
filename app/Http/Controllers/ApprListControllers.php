@@ -140,7 +140,8 @@ class ApprListControllers extends Controller
         };
 
         // === Mapping Module & Type ke Procedure dan Params ===
-        $pattern = "email_sent_{$approve_seq}_{$entity_cd}_{$doc_no}_{$.}";
+        
+        $pattern = "email_sent_{$approve_seq}_{$entity_cd}_{$doc_no}_{$level_no}";
         $date = date('Ymd');
 
         $routes = [
