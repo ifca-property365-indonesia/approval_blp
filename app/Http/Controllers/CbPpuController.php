@@ -14,7 +14,7 @@ use PDO;
 use DateTime;
 use Exception;
 
-class CbPPuController extends Controller
+class CbPpuController extends Controller
 {
     public function Mail(Request $request)
     {
