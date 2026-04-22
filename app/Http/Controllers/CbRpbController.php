@@ -166,6 +166,16 @@ class CbRpbController extends Controller
             $descstatus = "Cancelled";
             $imagestatus = "reject.png";
         }
+
+        $where = [
+            'entity_cd' => $data["entity_cd"],
+            'project_no'  => $data["project_no"],
+        ];
+
+        $descs = DB::connection('BLP')
+            ->table('mgr.pl_project')
+            ->where($where)
+            ->value('descs');
         $pdo = DB::connection('BLP')->getPdo();
         $sth = $pdo->prepare("SET NOCOUNT ON; EXEC mgr.x_send_mail_approval_cb_rpb ?, ?, ?, ?, ?, ?, ?, ?, ?, ?;");
         $sth->bindParam(1, $data["entity_cd"]);
@@ -194,7 +204,8 @@ class CbRpbController extends Controller
             "Pesan" => $msg,
             "St" => $st,
             "notif" => $notif,
-            "image" => $image
+            "image" => $image,
+            "entity_name" => $descs ?? ''
         );
         return view("email.after", $msg1);
     }
