@@ -191,11 +191,24 @@ class CbRumController extends Controller
             $st = 'OK';
             $image = "reject.png";
         }
+
+        $where = [
+            'entity_cd' => $data["entity_cd"],
+            'project_no'  => $data["project_no"],
+        ];
+
+        $descs = DB::connection('BLP')
+            ->table('mgr.pl_project')
+            ->where($where)
+            ->value('descs');
+
+        
         $msg1 = array(
             "Pesan" => $msg,
             "St" => $st,
             "notif" => $notif,
-            "image" => $image
+            "image" => $image,
+            "entity_name" => $descs ?? ''
         );
         return view("email.after", $msg1);
     }

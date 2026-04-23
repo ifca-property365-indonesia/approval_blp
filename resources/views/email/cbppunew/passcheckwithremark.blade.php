@@ -32,8 +32,13 @@
                         <tbody>
                             <tr>
                                 <td style="text-align: center; padding-bottom:25px">
-                                    <img width = "120" src="{{ url('public/images/email_header.jpg') }}" alt="logo">
-                                    <p style="font-size: 16px; color: #026735; padding-top: 0px;">PT MENTARI AGUNG MANDIRI</p>
+                                    <img src="{{ getEntityLogo($entity_name) }}" 
+                                        alt="logo" 
+                                        height="56" 
+                                        style="display:inline-block; border:0; outline:none; text-decoration:none;">
+                                    <p style="font-size: 16px; color: #026735; padding-top: 0px;">
+                                        {{ $entity_name ?? "PT BANGUN LAKSANA PERSADA"}}
+                                    </p>
                                 </td>
                             </tr>
                         </tbody>

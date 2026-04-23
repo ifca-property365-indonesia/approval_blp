@@ -29,7 +29,7 @@
                         <tbody>
                             <tr>
                                 <td style="text-align: center; padding-bottom:25px">
-                                    <img src="{{ url('public/images/email_header.png') }}" 
+                                    <img src="{{ getEntityLogo($data['entity_name']) }}" 
                                         alt="logo" 
                                         height="56" 
                                         style="display:inline-block; border:0; outline:none; text-decoration:none;">
