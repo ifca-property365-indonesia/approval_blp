@@ -160,6 +160,13 @@ return [
             'ignore_exceptions' => false,
             'level' => env('LOG_LEVEL', 'debug'),
         ],
+
+        'debug_fandy' => [
+            'driver' => 'daily', // You can choose the appropriate log driver (single, daily, syslog, etc.)
+            'path' => storage_path('logs/debug_fandy/' . date('Ymd') . '/sendmailapproval.log'),
+            'ignore_exceptions' => false,
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
     ],
 
 ];
