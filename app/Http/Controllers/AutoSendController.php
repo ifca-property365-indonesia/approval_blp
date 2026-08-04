@@ -274,20 +274,44 @@ class AutoSendController extends Controller
 
         $pdo = DB::connection('BLP')->getPdo();
 
-        $sql = "SET NOCOUNT ON; EXEC {$sp} ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+        // $sql = "SET NOCOUNT ON; EXEC {$sp} ?, ?, ?, ?, ?, ?, ?, ?, ?";
+        $sql = "EXEC {$sp} ?, ?, ?, ?, ?, ?, ?, ?, ?";
+        Log::info($sp);
         $stmt = $pdo->prepare($sql);
 
-        $stmt->execute([
-            $data->entity_cd,
-            $project_no,
-            $data->doc_no,
-            $status,
-            $downLevel,
-            $user_group,
-            $data->user_id,
-            $supervisor,
-            $reason
-        ]);
+        try {
+
+            $stmt->execute([
+                $data->entity_cd,
+                $project_no,
+                $data->doc_no,
+                $status,
+                $downLevel,
+                $user_group,
+                $data->user_id,
+                $supervisor,
+                $reason
+            ]);
+        
+        } catch (\PDOException $e) {
+        
+            dd([
+                'sql' => $sql,
+                'params' => [
+                    $data->entity_cd,
+                    $project_no,
+                    $data->doc_no,
+                    $status,
+                    $downLevel,
+                    $user_group,
+                    $data->user_id,
+                    $supervisor,
+                    $reason
+                ],
+                'message' => $e->getMessage(),
+                'errorInfo' => $e->errorInfo,
+            ]);
+        }
     }
 }
 
