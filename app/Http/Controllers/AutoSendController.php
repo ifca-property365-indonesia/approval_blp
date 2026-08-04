@@ -76,7 +76,22 @@ class AutoSendController extends Controller
         ];
 
         foreach ($dataList as $data) {
-
+            $skipDocNo = [
+                'PR26070006',
+            ];
+            
+            if (
+                $data->module === 'PO' &&
+                $data->TYPE === 'Q' &&
+                in_array(trim($data->doc_no), $skipDocNo)
+            ) {
+                Log::channel('debug_fandy')->info('Skip AutoSend PO Request', [
+                    'doc_no' => $data->doc_no,
+                    'entity_cd' => $data->entity_cd,
+                ]);
+            
+                continue;
+            }
             // Skip kondisi tertentu
             if (
                 (($data->TYPE === 'Y'|| $data->TYPE === 'F') && $data->module === 'CM')
