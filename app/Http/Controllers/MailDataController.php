@@ -24,6 +24,7 @@ class MailDataController extends Controller
     // }
     public function receive(Request $request)
     {
+        Log::info($request->all());
         $dataFromExternal = $request->all();
 
         $module = $request->module;
