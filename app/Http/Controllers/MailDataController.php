@@ -29,7 +29,7 @@ class MailDataController extends Controller
 
         $module = $request->module;
 
-        Log::info([
+        Log::channel('debug_fandy')->info([
             'module' => $module,
             'controller' => 'App\\Http\\Controllers\\' . $module . 'Controller',
         ]);

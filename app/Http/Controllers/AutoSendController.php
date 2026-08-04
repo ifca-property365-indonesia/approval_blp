@@ -295,7 +295,7 @@ class AutoSendController extends Controller
         
         } catch (\PDOException $e) {
         
-            dd([
+            Log::channel('debug_fandy')->info([
                 'sql' => $sql,
                 'params' => [
                     $data->entity_cd,
