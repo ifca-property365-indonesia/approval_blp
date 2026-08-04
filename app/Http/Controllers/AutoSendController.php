@@ -99,6 +99,10 @@ class AutoSendController extends Controller
 
             // ===== LEVEL 1 =====
             if ($level_no == 1) {
+                if ($data->module === 'PO' && $data->TYPE === 'Q') {
+                    $this->execSpPoRequest($exec, $data, 'P', 0, $reason);
+                    continue;
+                }
 
                 if ($data->module === 'LM') {
                     $this->execSpLM($exec, $entity_cd, $doc_no, 'P', 0, $reason);
@@ -130,6 +134,11 @@ class AutoSendController extends Controller
                     ->value('status');
 
                 if ($prevStatus !== 'A') {
+                    continue;
+                }
+
+                if ($data->module === 'PO' && $data->TYPE === 'Q') {
+                    $this->execSpPoRequest($exec, $data, 'A', $downLevel, $reason);
                     continue;
                 }
 
@@ -237,6 +246,41 @@ class AutoSendController extends Controller
             $project_no,
             $data->doc_no,
             $refNo,           // ← SELALU '' jika kosong
+            $status,
+            $downLevel,
+            $user_group,
+            $data->user_id,
+            $supervisor,
+            $reason
+        ]);
+    }
+
+    // =========================
+    // SP KHUSUS PO REQUEST
+    // =========================
+    private function execSpPoRequest($sp, $data, $status, $downLevel, $reason)
+    {
+        $project_no = trim($data->entity_cd) . '01';
+
+        $user_group = DB::connection('BLP')
+            ->table('mgr.security_groupings')
+            ->where('user_name', $data->user_id)
+            ->value('group_name');
+
+        $supervisor = DB::connection('BLP')
+            ->table('mgr.security_users')
+            ->where('name', $data->user_id)
+            ->value('supervisor');
+
+        $pdo = DB::connection('BLP')->getPdo();
+
+        $sql = "SET NOCOUNT ON; EXEC {$sp} ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+        $stmt = $pdo->prepare($sql);
+
+        $stmt->execute([
+            $data->entity_cd,
+            $project_no,
+            $data->doc_no,
             $status,
             $downLevel,
             $user_group,
