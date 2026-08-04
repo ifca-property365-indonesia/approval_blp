@@ -275,8 +275,7 @@ class AutoSendController extends Controller
         $pdo = DB::connection('BLP')->getPdo();
 
         // $sql = "SET NOCOUNT ON; EXEC {$sp} ?, ?, ?, ?, ?, ?, ?, ?, ?";
-        $sql = "SET NOCOUNT ON; EXEC {$sp} ?, ?, ?, ?, ?, ?, ?, ?, ?";
-        Log::info($sp);
+        $sql = "SET NOCOUNT ON; EXEC mgr.x_send_mail_approval_po_request ?, ?, ?, ?, ?, ?, ?, ?, ?";
         $stmt = $pdo->prepare($sql);
 
         try {
