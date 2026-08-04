@@ -12,15 +12,39 @@ use Illuminate\Support\Facades\DB;
 
 class MailDataController extends Controller
 {
+    // public function receive(Request $request)
+    // {
+    //     $dataFromExternal = $request->all();
+    //     $module = $request->module;
+    //     $controllerName = 'App\\Http\\Controllers\\' . $module . 'Controller';
+    //     $methodName = 'processModule';
+    //     $controllerInstance = new $controllerName();
+    //     $result = $controllerInstance->$methodName($dataFromExternal);
+    //     return $result;
+    // }
     public function receive(Request $request)
     {
         $dataFromExternal = $request->all();
+
         $module = $request->module;
+
+        Log::info([
+            'module' => $module,
+            'controller' => 'App\\Http\\Controllers\\' . $module . 'Controller',
+        ]);
+
         $controllerName = 'App\\Http\\Controllers\\' . $module . 'Controller';
+
+        // dd(
+        //     class_exists($controllerName),
+        //     $controllerName
+        // );
+
         $methodName = 'processModule';
+
         $controllerInstance = new $controllerName();
-        $result = $controllerInstance->$methodName($dataFromExternal);
-        return $result;
+
+        return $controllerInstance->$methodName($dataFromExternal);
     }
 
     public function processData($module='', $status='', $encrypt='')
