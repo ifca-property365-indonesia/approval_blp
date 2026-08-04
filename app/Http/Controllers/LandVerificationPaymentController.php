@@ -15,6 +15,16 @@ use Carbon\Carbon;
 
 class LandVerificationPaymentController extends Controller
 {
+    private function formatDate($date)
+    {
+        if (!$date || $date == '1900-01-01T00:00:00' || $date == '1900-01-01 00:00:00') {
+            return '00/00/0000';
+        }
+
+        return \Carbon\Carbon::parse($date)->format('d F Y');
+    }
+
+
     public function index(Request $request)
     {
         $callback = [
@@ -76,12 +86,12 @@ class LandVerificationPaymentController extends Controller
                 'incoming_form_no'      => $request->incoming_form_no,
                 'sph_amt_m2'            => number_format((float)$request->sph_amt_m2, 2, '.', ','),
                 'pph_amt'               => number_format((float)$request->pph_amt, 2, '.', ','),
-                'bphtb_amt'               => number_format((float)$request->bphtb_amt, 2, '.', ','),
+                'bphtb_amt'             => number_format((float)$request->bphtb_amt, 2, '.', ','),
                 'submission_tax_no'     => $request->submission_tax_no,
-                'pph_payment_date'      => \Carbon\Carbon::parse($request->pph_payment_date)->format('d F Y'),
-                'pph_reg_date'          => \Carbon\Carbon::parse($request->pph_reg_date)->format('d F Y'),
-                'pph_validation_date'   => \Carbon\Carbon::parse($request->pph_validation_date)->format('d F Y'),
-                'subject'               => "Need Approval for Land Verification Payment No.  ".$request->change_no,
+                'pph_payment_date'      => $this->formatDate($request->pph_payment_date),
+                'pph_reg_date'          => $this->formatDate($request->pph_reg_date),
+                'pph_validation_date'   => $this->formatDate($request->pph_validation_date),
+                'subject'               => "Need Approval for Land Verification Payment No.  ".$request->verification_no,
                 'link'                  => 'landverificationpayment',
             ];
 
