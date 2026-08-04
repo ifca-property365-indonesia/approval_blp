@@ -278,38 +278,40 @@ class AutoSendController extends Controller
         $sql = "SET NOCOUNT ON; EXEC mgr.x_send_mail_approval_po_request ?, ?, ?, ?, ?, ?, ?, ?, ?";
         $stmt = $pdo->prepare($sql);
 
+        $params = [
+            $data->entity_cd,
+            $project_no,
+            $data->doc_no,
+            $status,
+            $downLevel,
+            $user_group,
+            $data->user_id,
+            $supervisor,
+            $reason
+        ];
+
+        Log::channel('debug_fandy')->info('Start Execute SP', [
+            'sql' => $sql,
+            'params' => $params
+        ]);
+
         try {
 
-            $stmt->execute([
-                $data->entity_cd,
-                $project_no,
-                $data->doc_no,
-                $status,
-                $downLevel,
-                $user_group,
-                $data->user_id,
-                $supervisor,
-                $reason
+            $result = $stmt->execute($params);
+
+            Log::channel('debug_fandy')->info('Execute SP Success', [
+                'result' => $result
             ]);
-        
+
         } catch (\PDOException $e) {
-        
-            Log::channel('debug_fandy')->info([
-                'sql' => $sql,
-                'params' => [
-                    $data->entity_cd,
-                    $project_no,
-                    $data->doc_no,
-                    $status,
-                    $downLevel,
-                    $user_group,
-                    $data->user_id,
-                    $supervisor,
-                    $reason
-                ],
-                'message' => $e->getMessage(),
+
+            Log::channel('debug_fandy')->error('Execute SP Failed', [
+                'message'   => $e->getMessage(),
                 'errorInfo' => $e->errorInfo,
+                'params'    => $params
             ]);
+
+            throw $e;
         }
     }
 }
