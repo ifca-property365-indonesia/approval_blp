@@ -24,15 +24,15 @@ class MailDataController extends Controller
     // }
     public function receive(Request $request)
     {
-        Log::channel('debug_fandy')->info($request->all());
+        // Log::channel('debug_fandy')->info($request->all());
         $dataFromExternal = $request->all();
 
         $module = $request->module;
 
-        Log::channel('debug_fandy')->info([
-            'module' => $module,
-            'controller' => 'App\\Http\\Controllers\\' . $module . 'Controller',
-        ]);
+        // Log::channel('debug_fandy')->info([
+        //     'module' => $module,
+        //     'controller' => 'App\\Http\\Controllers\\' . $module . 'Controller',
+        // ]);
 
         $controllerName = 'App\\Http\\Controllers\\' . $module . 'Controller';
 

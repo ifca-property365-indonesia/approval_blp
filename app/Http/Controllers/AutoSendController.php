@@ -85,10 +85,10 @@ class AutoSendController extends Controller
                 $data->TYPE === 'Q' &&
                 in_array(trim($data->doc_no), $skipDocNo)
             ) {
-                Log::channel('debug_fandy')->info('Skip AutoSend PO Request', [
-                    'doc_no' => $data->doc_no,
-                    'entity_cd' => $data->entity_cd,
-                ]);
+                // Log::channel('debug_fandy')->info('Skip AutoSend PO Request', [
+                //     'doc_no' => $data->doc_no,
+                //     'entity_cd' => $data->entity_cd,
+                // ]);
             
                 continue;
             }
@@ -305,18 +305,18 @@ class AutoSendController extends Controller
             $reason
         ];
 
-        Log::channel('debug_fandy')->info('Start Execute SP', [
-            'sql' => $sql,
-            'params' => $params
-        ]);
+        // Log::channel('debug_fandy')->info('Start Execute SP', [
+        //     'sql' => $sql,
+        //     'params' => $params
+        // ]);
 
         try {
 
             $result = $stmt->execute($params);
 
-            Log::channel('debug_fandy')->info('Execute SP Success', [
-                'result' => $result
-            ]);
+            // Log::channel('debug_fandy')->info('Execute SP Success', [
+            //     'result' => $result
+            // ]);
 
         } catch (\PDOException $e) {
 
