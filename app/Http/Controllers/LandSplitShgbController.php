@@ -151,8 +151,7 @@ class LandSplitShgbController extends Controller
                 if (!file_exists($cacheFilePath)) {
                     // kirim email
                     Mail::to($email_address)->bcc([
-                            'noreply@agungintiland.com',
-                            'muhamad.zidan@ifca.co.id'
+                            'noreply@agungintiland.com'
                         ])
                         ->send(new SendLandMail($encryptedData, $dataArray));
 
