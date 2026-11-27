@@ -123,9 +123,7 @@ class CbPPuVvipController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($email)->bcc([
-                            'noreply@agungintiland.com'
-                        ])
+                    Mail::to($email)->bcc(array_filter([config('mail.bcc_archive')]))
                         ->send(new SendCbPpuVvipMail($encryptedData, $dataArray, 'IFCA SOFTWARE - ' . $entity_name));
 
                     // Mark email as sent

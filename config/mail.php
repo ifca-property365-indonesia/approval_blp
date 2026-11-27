@@ -114,6 +114,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Alamat Arsip BCC
+    |--------------------------------------------------------------------------
+    |
+    | Setiap email approval yang dikirim aplikasi ini di-BCC ke alamat arsip
+    | berikut. Isi MAIL_BCC_ARCHIVE di .env untuk menggantinya; kosongkan
+    | nilainya kalau arsip BCC tidak diinginkan.
+    |
+    */
+
+    'bcc_archive' => env('MAIL_BCC_ARCHIVE', 'noreply@agungintiland.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Markdown Mail Settings
     |--------------------------------------------------------------------------
     |

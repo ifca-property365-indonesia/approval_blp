@@ -122,7 +122,7 @@ class StaffFeedbackController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emails)->send(new StaffActionPoOrderMail($EmailBack));
+                    Mail::to($emails)->bcc(array_filter([config('mail.bcc_archive')]))->send(new StaffActionPoOrderMail($EmailBack));
             
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
@@ -238,7 +238,7 @@ class StaffFeedbackController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emails)->send(new StaffActionCbFupdMail($EmailBack));
+                    Mail::to($emails)->bcc(array_filter([config('mail.bcc_archive')]))->send(new StaffActionCbFupdMail($EmailBack));
             
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
@@ -357,7 +357,7 @@ class StaffFeedbackController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emails)->send(new StaffActionCbMail($EmailBack));
+                    Mail::to($emails)->bcc(array_filter([config('mail.bcc_archive')]))->send(new StaffActionCbMail($EmailBack));
             
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
@@ -471,7 +471,7 @@ class StaffFeedbackController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emailAddresses)->send(new StaffActionCbMail($EmailBack));
+                    Mail::to($emailAddresses)->bcc(array_filter([config('mail.bcc_archive')]))->send(new StaffActionCbMail($EmailBack));
         
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
