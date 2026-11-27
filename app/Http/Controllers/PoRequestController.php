@@ -118,9 +118,7 @@ class PoRequestController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // Send email only if it has not been sent before
-                    Mail::to($emailAddress)->bcc([
-                            'noreply@agungintiland.com'
-                        ])
+                    Mail::to($emailAddress)->bcc(array_filter([config('mail.bcc_archive')]))
                         ->send(new SendPoRMail($encryptedData, $dataArray, 'IFCA SOFTWARE - '.$entity_name));
 
                     // Mark email as sent

@@ -84,7 +84,7 @@ class FeedbackPLController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emailAddress)->send(new FeedbackPLLymanMail($EmailBack));
+                    Mail::to($emailAddress)->bcc(array_filter([config('mail.bcc_archive')]))->send(new FeedbackPLLymanMail($EmailBack));
                     
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
@@ -167,7 +167,7 @@ class FeedbackPLController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emailAddress)->send(new FeedbackPLRevisionMail($EmailBack));
+                    Mail::to($emailAddress)->bcc(array_filter([config('mail.bcc_archive')]))->send(new FeedbackPLRevisionMail($EmailBack));
                     
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');

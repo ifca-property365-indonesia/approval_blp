@@ -98,9 +98,7 @@ class StaffActionController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emailAddress)->bcc([
-                            'noreply@agungintiland.com'
-                        ])
+                    Mail::to($emailAddress)->bcc(array_filter([config('mail.bcc_archive')]))
                         ->send(new StaffActionMail($EmailBack));
                     
                     // Mark email as sent
@@ -260,9 +258,7 @@ class StaffActionController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emails)->bcc([
-                            'noreply@agungintiland.com'
-                        ])->send($mail);
+                    Mail::to($emails)->bcc(array_filter([config('mail.bcc_archive')]))->send($mail);
         
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
@@ -384,9 +380,7 @@ class StaffActionController extends Controller
         
                 if (!file_exists($cacheFilePath)) {
                     // Send email
-                    Mail::to($emailAddress)->bcc([
-                            'noreply@agungintiland.com'
-                        ])->send(new StaffActionPoSMail($EmailBack));
+                    Mail::to($emailAddress)->bcc(array_filter([config('mail.bcc_archive')]))->send(new StaffActionPoSMail($EmailBack));
         
                     // Mark email as sent
                     file_put_contents($cacheFilePath, 'sent');
@@ -517,9 +511,7 @@ class StaffActionController extends Controller
                 }
 
                 if (!file_exists($cacheFilePath)) {
-                    Mail::to($emails)->bcc([
-                            'noreply@agungintiland.com'
-                        ])->send($mail);
+                    Mail::to($emails)->bcc(array_filter([config('mail.bcc_archive')]))->send($mail);
                     file_put_contents($cacheFilePath, 'sent');
 
                     $sentTo = implode(', ', $emails);
@@ -729,9 +721,7 @@ class StaffActionController extends Controller
                     // ===============================
                     if (!file_exists($cacheFilePath)) {
 
-                        Mail::to($email_address)->bcc([
-                            'noreply@agungintiland.com'
-                        ])->send(new SendNextLandReqeuest($dataArray));
+                        Mail::to($email_address)->bcc(array_filter([config('mail.bcc_archive')]))->send(new SendNextLandReqeuest($dataArray));
 
                         file_put_contents($cacheFilePath, 'sent');
 

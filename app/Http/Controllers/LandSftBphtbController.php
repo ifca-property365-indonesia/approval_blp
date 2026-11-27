@@ -134,9 +134,7 @@ class LandSftBphtbController extends Controller
 
                 if (!file_exists($cacheFilePath)) {
                     // kirim email
-                    Mail::to($email_address)->bcc([
-                            'noreply@agungintiland.com'
-                        ])
+                    Mail::to($email_address)->bcc(array_filter([config('mail.bcc_archive')]))
                         ->send(new SendLandMail($encryptedData, $dataArray));
 
                     file_put_contents($cacheFilePath, 'sent');
