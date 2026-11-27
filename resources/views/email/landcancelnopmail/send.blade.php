@@ -80,16 +80,19 @@
                   <td width="40%">Nomor Dokumen</td><td width="2%">:</td><td>{{ $dataArray['doc_no'] }}</td>
                 </tr>
                 <tr>
-                  <td width="40%">NOP </td><td width="2%">:</td><td>{{ $dataArray['nop_no'] }}</td>
+                  <td width="40%">No. Berkas Masuk</td><td width="2%">:</td><td>{{ $dataArray['incoming_form_no'] }}</td>
                 </tr>
                 <tr>
-                  <td width="40%">>Nama pada SPPT</td><td width="2%">:</td><td>{{ $dataArray['sppt_name'] }}</td>
+                  <td width="40%">No. Buku</td><td width="2%">:</td><td>{{ $dataArray['book_no'] }}</td>
                 </tr>
                 <tr>
-                  <td width="40%">Nama Pemilik</td><td width="2%">:</td><td>{{ $dataArray['owner_name'] }}</td>
+                  <td width="40%">No. Alas Hak</td><td width="2%">:</td><td>{{ $dataArray['land_title_no'] }}</td>
                 </tr>
                 <tr>
-                  <td width="40%">Tanggal Cancel NOP</td><td width="2%">:</td><td>{{ $dataArray['transaction_date'] }}</td>
+                  <td width="40%">Nama Alas Hak</td><td width="2%">:</td><td>{{ $dataArray['land_title_name'] }}</td>
+                </tr>
+                <tr>
+                  <td width="40%">Tanggal Cancel Form</td><td width="2%">:</td><td>{{ $dataArray['transaction_date'] }}</td>
                 </tr>
                 <tr>
                   <td width="40%">Alasan Pembatalan</td><td width="2%">:</td>
